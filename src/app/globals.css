@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@import '@radix-ui/colors/black-alpha.css';
+@import '@radix-ui/colors/mauve.css';
+@import '@radix-ui/colors/violet.css';
+
+:focus {outline:0 !important;}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -18,16 +25,90 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
+  background: linear-gradient(to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
+
+
+.main-bg {
+  background-color: rgb(23, 25, 30);
+}
+
+iframe {
+  height: 100%;
+}
+
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 }
+
+
+.mixer-morph {
+  border-radius: 18px;
+  background: #17191e;
+  box-shadow: 10px 10px 29px #111216,
+    -10px -10px 29px #1d2026;
+}
+
+.btn-morph {
+  border-radius: 4px;
+  background: #17191e;
+  box-shadow: 5px 5px 10px #111216,
+    -5px -5px 10px #1d2026;
+  padding: 5px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-morph:hover {
+  border-radius: 4px;
+  background: #17191e;
+  box-shadow: 3px 3px 8px #111216,
+    -3px -3px 8px #1d2026;
+  padding: 5px;
+  transition: .1s;
+}
+
+
+.slider-morph {
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .7);
+  box-shadow:  0px 3px 10px #111216;
+  padding: 5px;
+}
+
+.shadow-b {
+  background: rgb(0, 0, 0);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+}
+
+.shadow-t {
+  background: rgb(0, 0, 0);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 90%);
+  pointer-events: none;
+}
+
+.led{
+  border-radius: 50%;
+  background: #17191e;
+  box-shadow: inset 5px 5px 10px #111216,
+    inset -5px -5px 10px #1d2026;
+}
+
+.table-shape{
+  border-radius: 20px;
+  background: #17191e;
+  box-shadow: inset 20px 20px 60px #14151a,
+              inset -20px -20px 60px #1a1d23;
+        
+}
+
+.play-bar:hover{
+height: 30px!important;
+}
+
