@@ -24,17 +24,19 @@ export default function InputSearch({ data, deckId }: InputSearchProps) {
     };
 
     return (
-        <Form.Root onSubmit={handleSubmit} className="flex w-full items-center mb-2">
+        <Form.Root onSubmit={handleSubmit} className="flex w-full items-center mb-2 ">
             <Form.Field className="w-[80%] flex items-center" name="search">
                 <Form.Control asChild>
+                    <div className='input-morph mr-4'>
                     <input
-                        className="Input w-full p-2 border border-gray-300 rounded-md mr-4"
+                        className="Input w-full p-2 border border-gray-300 rounded-md w-full"
                         type="text"
                         required
                         value={inputValue}
                         onChange={handleChange}
                         placeholder="Enter a track or an artist name..."
                     />
+                    </div>
                 </Form.Control>
                 <Form.Submit asChild>
                     <div className="btn-morph">

@@ -112,3 +112,18 @@ iframe {
 height: 30px!important;
 }
 
+.screen-morph{
+  
+  background: #17191e;
+  box-shadow:  5px 5px 10px #101115,
+               -5px -5px 10px #1e2127;
+}
+
+.input-morph{
+padding: 3px; 
+border-radius: 6px;
+width: 90%;
+background: #17191e;
+box-shadow: inset 5px 5px 10px #101115,
+            inset -5px -5px 10px #1e2127;
+}

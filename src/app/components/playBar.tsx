@@ -3,11 +3,18 @@ import { useEffect, useState } from 'react';
 import { GetTimeless } from '../utils/timeFunc';
 import { usePlayerMutations } from '../hooks/mutations';
 
+interface CrossFader {
+    position: number;
+    autoMixStartAt: number;
+    autoMixDuration: number;
+}
+
 interface ProgressBarParams {
     time: number;
     duration: number;
     deck: string;
     seekTo: number;
+    crossFader?: CrossFader;
 }
 
 interface ProgressBarProps {
@@ -19,6 +26,7 @@ export default function ProgressBar({ data }: ProgressBarProps) {
     const [remainingTime, setRemainingTime] = useState<string>();
     const [hoverPercent, setHoverPercent] = useState<number | null>(null);
     const [hoverTime, setHoverTime] = useState<string | null>(null);
+    const [fadeWidth, setFadeWidth] = useState<number | undefined>(0)
     const { updateSeekTo } = usePlayerMutations()
 
 
@@ -30,13 +38,22 @@ export default function ProgressBar({ data }: ProgressBarProps) {
             setRemainingTime(lessTime);
             setProgress(progressPercent);
         }
+
     }, [data.time, data.duration]);
 
+    useEffect(() => {
+        if (data.crossFader && data.duration > 0) {
+            const wPercent = (data.crossFader.autoMixDuration / data.duration) * 100;
+            setFadeWidth(wPercent);
+        } else {
+            setFadeWidth(undefined);
+        }
+    }, [data.crossFader, data.duration]);
 
     const setPlayProgress = (value: number[]) => {
-        updateSeekTo.mutate({currentTime:value[0],deck:data.deck,trackDuration:data.duration})
+        updateSeekTo.mutate({ currentTime: value[0], deck: data.deck, trackDuration: data.duration })
         setProgress(value[0]);
-        
+
     };
 
     const handleMouseMove = (event: React.MouseEvent) => {
@@ -51,8 +68,8 @@ export default function ProgressBar({ data }: ProgressBarProps) {
     };
 
     const handleMouseLeave = () => {
-        setHoverPercent(null); 
-        setHoverTime(null);  
+        setHoverPercent(null);
+        setHoverTime(null);
     };
 
     return (
@@ -75,8 +92,8 @@ export default function ProgressBar({ data }: ProgressBarProps) {
                     borderRadius: "8px",
                 }}
                 className='btn-morph play-bar'
-                onMouseMove={handleMouseMove}  
-                onMouseLeave={handleMouseLeave} 
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
             >
                 <Slider.Track
                     style={{
@@ -107,15 +124,42 @@ export default function ProgressBar({ data }: ProgressBarProps) {
                             style={{
                                 position: 'absolute',
                                 height: '100%',
-                                borderRadius: '2px',
+                                borderRadius: '8px',
                                 width: `${hoverPercent}%`,
-                                backgroundColor: 'rgba(0, 0, 0, 0.3)', 
-                                
+                                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+
                             }}
                         />
                     )}
+
+                    {/* Fade Out Bar */}
+                    <div style={{
+                        position: "absolute",
+                        width: fadeWidth + '%',
+                        height: '100%',
+                        background: "linear-gradient(90deg, rgba(255,0,67,1) 0%, rgba(255,0,67,0) 100%)",
+                        borderRadius: 3,
+                        right: 0,
+                        filter: 'blur(1px)',
+                        pointerEvents:"none",
+                    }}>
+                    </div>
+
+                    {/* Fade In Bar */}
+                    <div style={{
+                        position: "absolute",
+                        width: fadeWidth + '%',
+                        height: '100%',
+                        background: "linear-gradient(90deg, rgba(0,63,255,0) 0%, rgba(0,63,255,1) 100%)",
+                        borderRadius: 3,
+                        left: 0,
+                        filter: 'blur(1px)',
+                        pointerEvents:"none",
+                    }}>
+                    </div>
+
                 </Slider.Track>
-                
+
                 {hoverTime && (
                     <div style={{
                         position: 'absolute',

@@ -32,22 +32,13 @@ button {
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  width: 90%;
+  width: 100%;
   font-size: 15px;
   color: white;
   background-color: black;
   box-shadow: 0 0 0 1px var(--black-a9);
 }
 
-.Input:hover,
-.Textarea:hover {
-  box-shadow: 0 0 0 1px black;
-}
-
-.Input:focus,
-.Textarea:focus {
-  box-shadow: 0 0 0 2px black;
-}
 
 .Input::selection,
 .Textarea::selection {

@@ -1,11 +1,16 @@
 import '../styles/sliders.css';
 import * as Slider from '@radix-ui/react-slider';
 import Mixer from '../utils/mixer';
-import { useEffect } from 'react';
 import { usePlayerMutations } from '../hooks/mutations';
 
+interface CrossFader {
+    position:number;
+    autoMixStartAt:number;
+    autoMixDuration:number;
+}
+
 interface HorizontalSliderProps {
-    crossfader: number;
+    crossfader: CrossFader
 }
 
 export default function HorizontalSlider({ crossfader }: HorizontalSliderProps) {
@@ -49,17 +54,13 @@ export default function HorizontalSlider({ crossfader }: HorizontalSliderProps) 
         }, stepTime);
     };
 
-    useEffect(() => {
-        setTimeout(() => {
-            autoTransitionCrossfader(-50, 50, 5000);
-        }, 1000);
-    }, []);
+    
 
     return (
         <div className='w-[100%] flex h-[70%] items-center justify-center'>
             <Slider.Root
                 orientation="horizontal"
-                value={[crossfader]} 
+                value={[crossfader.position]} 
                 max={50}
                 min={-50}
                 step={1}

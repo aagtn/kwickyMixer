@@ -1,7 +1,7 @@
 'use client'
 import { useRef,useEffect } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
-
+import { usePlayerMutations } from '../hooks/mutations';
 
 interface YoutubePlayerPropsData {
     selectedVideo: string;
@@ -10,13 +10,10 @@ interface YoutubePlayerPropsData {
     seekTo:number;
     loop:boolean;
   }
-  
-  interface BgPlayerProps {
-    data?: YoutubePlayerPropsData;
-  }
 
-export default function BgYoutubePlayer({data}:BgPlayerProps) {
+export default function BgYoutubePlayer({data,deckId}:{data:YoutubePlayerPropsData, deckId:string}) {
     const playerRef = useRef<YouTube>(null);
+    const {updatePlayerState} = usePlayerMutations()
     
     if (!data) {
         return <div className='p-6 w-full min-h-[250px]'>No track selected...</div>;
@@ -50,25 +47,25 @@ export default function BgYoutubePlayer({data}:BgPlayerProps) {
       },[data.seekTo])
 
       const handleEnd = () => {
-        // const player = playerRef.current?.internalPlayer
-        // if (data.loop) {      
-        //   player.playVideo()
-        // }
+        const player = playerRef.current?.internalPlayer
+        if (data.loop) {      
+          player.playVideo()
+        }
     
-        // if (!data.loop) {
-        //   updatePlayerState.mutate('paused')
-        // }
+        if (!data.loop) {
+          updatePlayerState.mutate({state:'paused',deck:deckId})
+        }
       }
 
     const opts: YouTubeProps['opts'] = {
         height: '150%',
         width: '150%',
         playerVars: {
-            autoplay: 0,
-            controls: 0,
-            iv_load_policy:3,
-            modestbranding:1,      
-            rel:0
+          autoplay: 0,
+          controls: 0,
+          iv_load_policy: 3,
+          modestbranding: 1,
+          rel: 1
         }
     };
 

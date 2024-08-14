@@ -17,7 +17,7 @@ interface ScreenProps{
 export default function Screen({data}:ScreenProps){
 
     return(
-        <div className="w-full bg-black h-[65%] mt-2 rounded-lg overflow-hidden pointer-events-none">
+        <div className="w-full bg-black h-[65%] mt-2 rounded-lg overflow-hidden pointer-events-none screen-morph">
             <YoutubePlayer data={data} />
         </div>
     )

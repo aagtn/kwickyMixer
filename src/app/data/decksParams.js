@@ -9,7 +9,7 @@ const deckA = {
     loop:true,
     currentTime:0,
     trackDuration:0,
-    seekTo:0
+    seekTo:0,
 }
 
 const deckB = {
@@ -23,11 +23,13 @@ const deckB = {
     loop:true,
     currentTime:0,
     trackDuration:0,
-    seekTo:0
+    seekTo:0,
 }
 
 const crossFader = {
-    position:-50
+    position:-50,
+    autoMixStartAt:-10,
+    autoMixDuration:5
 }
 
 export {deckA, deckB, crossFader}

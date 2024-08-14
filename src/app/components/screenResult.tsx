@@ -35,8 +35,9 @@ export default function ScreenResult({ data, deckId }: { data: DataObj, deckId: 
     }
 
     return (
+        
         <ScrollArea.Root className="ScrollAreaRoot">
-            <ScrollArea.Viewport className="ScrollAreaViewport">
+            <ScrollArea.Viewport className="ScrollAreaViewport m-2">
                 <div className='shadow-b w-full h-[40px] bg-red-500 absolute bottom-0'></div>
                 <div className='shadow-t w-full h-[10px] bg-red-500 absolute'></div>
                 <div style={{ padding: '15px 20px' }} >
@@ -60,5 +61,6 @@ export default function ScreenResult({ data, deckId }: { data: DataObj, deckId: 
             </ScrollArea.Scrollbar>
             <ScrollArea.Corner className="ScrollAreaCorner" />
         </ScrollArea.Root>
+
     );
 }

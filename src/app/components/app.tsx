@@ -50,9 +50,9 @@ export default function App() {
                 <div className="flex z-10 w-full flex justify-center items-center p-8">
                     <div className="flex w-full min-w-[100%] min-h-[80%] h-[80%] bg-[#101114] p-6 rounded-3xl">
                         <div className="flex w-full rounded-xl p-4 main-bg">
-                            <DeckCpnt deckId={"deckA"} data={dataA} />
-                            <MixerCpnt data={{ deckA: dataA, deckB: dataB, crossfader: dataCrossFader?.position }} />
-                            <DeckCpnt deckId={"deckB"} data={dataB} />
+                            <DeckCpnt deckId={"deckA"} data={dataA} crossfader={dataCrossFader}/>
+                            <MixerCpnt data={{ deckA: dataA, deckB: dataB, crossfader: dataCrossFader }} />
+                            <DeckCpnt deckId={"deckB"} data={dataB} crossfader={dataCrossFader}/>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@ export default function App() {
                         }}
                         className="w-full bg-slate-800 p-0 overflow-hidden"
                     >
-                        {dataA && <BgYoutubePlayer data={dataA} />}
+                        {dataA && <BgYoutubePlayer data={dataA} deckId={'deckA'}/>}
                     </div>
                     <div
                         style={{
@@ -75,7 +75,7 @@ export default function App() {
                         }}
                         className="w-full p-0 overflow-hidden absolute top-0"
                     >
-                        {dataB && <BgYoutubePlayer data={dataB} />}
+                        {dataB && <BgYoutubePlayer data={dataB} deckId={'deckB'} />}
                     </div>
                 </Box>
             </div>

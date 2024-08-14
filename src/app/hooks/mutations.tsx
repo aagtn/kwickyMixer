@@ -82,7 +82,8 @@ function usePlayerMutations() {
             return Promise.resolve(dataCross);
         },
         onSuccess: (data) => {
-            queryClient.setQueryData(['mixer'], () => ({
+            queryClient.setQueryData(['mixer'], (oldData:any) => ({
+                ...oldData,
                 position: data,
             }));
         },
@@ -140,6 +141,43 @@ function useSearchInputMutations() {
     });
 
     return { updateDeckSearchInput, updateSelectedVideo }
+    
 }
 
-export { usePlayerMutations, useSearchInputMutations }
+function useAutoMixMutation (){
+    const queryClient = useQueryClient()
+
+    const updateAutoMixDuration = useMutation({
+        mutationFn: ({ newValue}: { newValue: number }) => {
+            return Promise.resolve(newValue);
+        },
+        onSuccess: (value) => {
+            queryClient.setQueryData(["mixer"], (oldData: any) => {
+                return {
+                    ...oldData,
+                    autoMixDuration: value
+
+                };
+            });
+        }
+    });
+
+    const updateAutoMixStart = useMutation({
+        mutationFn: ({ newValue}: { newValue: number }) => {
+            return Promise.resolve(newValue);
+        },
+        onSuccess: (value) => {
+            queryClient.setQueryData(["mixer"], (oldData: any) => {
+                return {
+                    ...oldData,
+                    autoMixStartAt: value
+
+                };
+            });
+        }
+    });
+
+    return {updateAutoMixDuration,updateAutoMixStart}
+}
+
+export { usePlayerMutations, useSearchInputMutations, useAutoMixMutation }

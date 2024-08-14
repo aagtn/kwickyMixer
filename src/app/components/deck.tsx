@@ -25,14 +25,21 @@ interface DataObj {
     seekTo:number;
 }
 
+interface CrossFader {
+    position:number;
+    autoMixStartAt:number;
+    autoMixDuration:number;
+  }
+
 interface DeckCpnProps {
     deckId: string;
     data?: DataObj;
+    crossfader?:CrossFader
 }
 
 
-export default function DeckCpnt({ deckId, data }: DeckCpnProps ) {
-    if (!data) {
+export default function DeckCpnt({ deckId, data, crossfader }: DeckCpnProps ) {
+    if (!data ) {
         return <div>Loading...</div>;
     }
 
@@ -42,7 +49,7 @@ export default function DeckCpnt({ deckId, data }: DeckCpnProps ) {
             <InputSearch data={data.searchInput} deckId={deckId} />
             <ScreenResult data={data} deckId={deckId} />
             <Screen data={{selectedVideo : data.selectedVideo , playState : data.playState, volume:data.volume, loop:data.loop, deck:deckId,seekTo:data.seekTo}} />
-            <ProgressBar data={{time:data.currentTime, duration : data.trackDuration, deck:deckId,seekTo:data.seekTo}} />
+            <ProgressBar data={{time:data.currentTime, duration : data.trackDuration, deck:deckId, seekTo:data.seekTo,crossFader:crossfader}} />
             <Vynil data={data.image}/>
             <Controls data={{playState : data.playState,loop : data.loop}} deckId={deckId}/>
         </div>
