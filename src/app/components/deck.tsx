@@ -40,7 +40,7 @@ export default function DeckCpnt({ deckId, data }: DeckCpnProps ) {
 
         <div className="w-[40%] flex flex-col items-center p-5 ">
             <InputSearch data={data.searchInput} deckId={deckId} />
-            <ScreenResult data={data.videos} deckId={deckId} />
+            <ScreenResult data={data} deckId={deckId} />
             <Screen data={{selectedVideo : data.selectedVideo , playState : data.playState, volume:data.volume, loop:data.loop, deck:deckId,seekTo:data.seekTo}} />
             <ProgressBar data={{time:data.currentTime, duration : data.trackDuration, deck:deckId,seekTo:data.seekTo}} />
             <Vynil data={data.image}/>

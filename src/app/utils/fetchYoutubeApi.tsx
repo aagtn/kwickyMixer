@@ -8,8 +8,11 @@ interface YoutubeVideo {
     title: string;
 }
 
+
+
 export default async function fetchYoutube({ input, deck }: YoutubeSearchParams) {
-    const apiKey = 'AIzaSyCUdPdSlrzzvasU5-emqNrv3qDo0ddwrAY'
+    const secret = process.env.NEXT_PUBLIC_API_KEY
+    const apiKey = secret
     const maxResults = 15
 
     try {

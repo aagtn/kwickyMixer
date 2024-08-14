@@ -2,7 +2,7 @@ import '../styles/searchInput.css'
 import { Button } from "@radix-ui/themes";
 import * as Form from '@radix-ui/react-form';
 import { useState } from "react";
-import { useSearhInputMutations } from '../hooks/mutations';
+import { useSearchInputMutations } from '../hooks/mutations';
 
 interface InputSearchProps {
     data: string;
@@ -11,7 +11,7 @@ interface InputSearchProps {
 
 export default function InputSearch({ data, deckId }: InputSearchProps) {
 
-    const { updateDeckSearchInput } = useSearhInputMutations()
+    const { updateDeckSearchInput } = useSearchInputMutations()
     const [inputValue, setInputValue] = useState<string>(data);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

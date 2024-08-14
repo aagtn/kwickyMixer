@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Theme } from '@radix-ui/themes';
-import { Flex, Box } from "@radix-ui/themes";
+import { Box } from "@radix-ui/themes";
 import DeckCpnt from './deck';
 import MixerCpnt from './mixer';
 import BgYoutubePlayer from './bgPlayer';
@@ -10,8 +10,8 @@ import { useEffect, useState } from 'react';
 
 export default function App() {
 
-    const [bgOpacityA, setBgOpacityA] = useState<number>(1); // Initial opacity of first background
-    const [bgOpacityB, setBgOpacityB] = useState<number>(0); // Initial opacity of second background
+    const [bgOpacityA, setBgOpacityA] = useState<number>(1); 
+    const [bgOpacityB, setBgOpacityB] = useState<number>(0); 
 
     const { data: dataA, isLoading: isLoadingA, error: errorA } = useQuery({
         queryKey: ['deckA'],

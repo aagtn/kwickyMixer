@@ -105,7 +105,7 @@ function usePlayerMutations() {
     return { updateCurrentTime, updateDuration, updatePlayerState, updateLoopState, updateVolume, updateCrossFader, updateSeekTo };
 }
 
-function useSearhInputMutations() {
+function useSearchInputMutations() {
     const queryClient = useQueryClient();
 
     const updateDeckSearchInput = useMutation({
@@ -142,4 +142,4 @@ function useSearhInputMutations() {
     return { updateDeckSearchInput, updateSelectedVideo }
 }
 
-export { usePlayerMutations, useSearhInputMutations }
+export { usePlayerMutations, useSearchInputMutations }

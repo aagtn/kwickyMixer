@@ -16,26 +16,6 @@ export default function VerticalSlider({ volume, deckId }: VerticalSliderProps) 
 
     const [volumeState, setVolumeState] = useState<number>(volume);
 
-    // const updateVolume = useMutation({
-    //     mutationFn: async (newVolume: number) => {
-    //         return Promise.resolve(newVolume)
-    //     },
-    //     onSuccess: (data) => {
-    //         const oppositeDeckId = deckId === "deckA" ? "deckB" : "deckA";
-
-    //         queryClient.setQueryData([deckId], (oldData: any) => ({
-    //             ...oldData,
-    //             volume: data,
-    //         }));
-
-    //         queryClient.setQueryData([oppositeDeckId], (oldData: any) => ({
-    //             ...oldData,
-    //             volume: 100 - data,
-    //         }));
-    //     }
-    // });
-
-
     const setVolume = (value: number[]) => {
         const newVolume = value[0];
         setVolumeState(newVolume);
@@ -51,39 +31,28 @@ export default function VerticalSlider({ volume, deckId }: VerticalSliderProps) 
                 value={[volume]}
                 onValueChange={setVolume}
                 aria-label="Volume"
-                style={{ position: 'relative', display: 'flex', alignItems: 'center', height: '70%' }}
+                style={{ position: 'relative', display: 'flex', alignItems: 'center', height: '70%',cursor:'unset' }}
             >
                 <Slider.Track
                     style={{
                         position: 'relative',
                         flexGrow: 1,
-                        width: 4,                        
+                        width: 10,                        
                         height: '100%',
                         borderRadius: 2,
                     }}
-                    className='slider-inner-shadow'
+                    className='slider-vol-morph flex justify-center'
                 >
                     <Slider.Range
                         style={{
                             position: 'absolute',
                             background: 'blue',
-                            width: '100%',
+                            width: '60%',
                             borderRadius: 'inherit',
+                            filter:"blur(2px)",
                         }}
                     />
                 </Slider.Track>
-                {/* <Slider.Thumb
-                    style={{
-                        display: 'block',
-                        width: 20,
-                        height: 46,
-                        //backgroundColor: "rgba(0,0,0,.8)",
-                        borderRadius: '2px',
-                        transform: "translateX(-8px)",
-                        cursor: "pointer",
-                    }}
-                    className='slider-morph'
-                /> */}
             </Slider.Root>
         </div>
     );

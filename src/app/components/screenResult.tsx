@@ -1,26 +1,36 @@
 import '../styles/screenResult.css';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 import Image from 'next/image';
-import { useSearhInputMutations } from '../hooks/mutations';
+import { useSearchInputMutations } from '../hooks/mutations';
+import { useEffect } from 'react';
 
-interface YoutubeVideo {
+interface VideoObj {
     id: string
-    title:string
-    image:string
+    title: string
+    image: string
 }
 
-interface ScreenResultProps {
-    data?: YoutubeVideo[]
-    deckId: string
+interface DataObj {
+    searchInput: string;
+    videos: VideoObj[];
+    volume: number;
+    playState: string;
+    selectedVideo: string;
+    image: string;
+    loop: boolean;
+    currentTime: number;
+    trackDuration: number;
+    seekTo: number;
 }
 
-export default function ScreenResult({ data, deckId }: ScreenResultProps) {
-    const {updateSelectedVideo} = useSearhInputMutations()
+export default function ScreenResult({ data, deckId }: { data: DataObj, deckId: string }) {
+    const { updateSelectedVideo } = useSearchInputMutations()
+
 
     const handleSelectedVideo = (event: React.MouseEvent<HTMLInputElement>) => {
         const key = event.currentTarget.getAttribute('data-key');
         if (key) {
-            updateSelectedVideo.mutate({newVideoId:key, deck:deckId});
+            updateSelectedVideo.mutate({ newVideoId: key, deck: deckId });
         }
     }
 
@@ -30,10 +40,11 @@ export default function ScreenResult({ data, deckId }: ScreenResultProps) {
                 <div className='shadow-b w-full h-[40px] bg-red-500 absolute bottom-0'></div>
                 <div className='shadow-t w-full h-[10px] bg-red-500 absolute'></div>
                 <div style={{ padding: '15px 20px' }} >
-                    {data && data.length > 0 ? (
-                        data.map((video) => (
-                            <div className="Tag flex cursor-pointer hover:text-blue-500 items-center" data-key={video.id} data-img={video.image} key={video.id} onClick={handleSelectedVideo}>
-                               <div className='w-[40px] h-[30px] flex items-center justify-center object-cover bg-red-500 overflow-hidden rounded mr-3 bg-slate-100'><Image src={video.image} width={60} height={60} alt='cover' className='object-cover'/></div> {video.title}
+                    {data && data.videos.length > 0 ? (
+                        data.videos.map((video) => (
+                            <div className={`Tag flex cursor-pointer hover:text-blue-500 text-white items-center ${data.selectedVideo === video.id ? "selected" : ""}`} data-key={video.id} data-img={video.image} key={video.id} onClick={handleSelectedVideo}>
+                                <div className='w-[40px] h-[30px] flex items-center justify-center object-cover bg-red-500 overflow-hidden rounded mr-3 bg-slate-100'><Image src={video.image} width={60} height={60} alt='cover' className='object-cover' /></div>
+                                {video.title}
                             </div>
                         ))
                     ) : (
