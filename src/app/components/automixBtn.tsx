@@ -1,10 +1,17 @@
 import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons';
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAutoMixMutation } from '../hooks/mutations';
 export default function AutoMixBtn() {
     const [autoTransition, setAutoTransition] = useState<boolean>(true)
+    const {updateAutoMixState} = useAutoMixMutation()
+    
     const handleAutoTrans = () => {
         setAutoTransition((prev)=> !prev)
     }
+
+    useEffect(()=>{
+        updateAutoMixState.mutate({newValue:autoTransition})
+    },[autoTransition])
 
     return (
         <div className="w-[40%] btn-morph flex justify-evenly" onClick={handleAutoTrans}>

@@ -1,21 +1,79 @@
 import '../styles/sliders.css';
 import * as Slider from '@radix-ui/react-slider';
 import Mixer from '../utils/mixer';
-import { usePlayerMutations } from '../hooks/mutations';
+import { usePlayerMutations, useAutoMixMutation } from '../hooks/mutations';
+import { useEffect, useState } from 'react';
 
 interface CrossFader {
-    position:number;
-    autoMixStartAt:number;
-    autoMixDuration:number;
+    position: number;
+    autoMixStartAt: number;
+    autoMixDuration: number;
+    transitionInProcess: boolean;
 }
 
 interface HorizontalSliderProps {
-    crossfader: CrossFader
+    crossfader: CrossFader;
+    deckA?: string;
+    deckB?: string;
 }
 
-export default function HorizontalSlider({ crossfader }: HorizontalSliderProps) {
-    
-    const {updateVolume,updateCrossFader} = usePlayerMutations()
+export default function HorizontalSlider({ crossfader, deckA, deckB }: HorizontalSliderProps) {
+
+    const { updateVolume, updateCrossFader, updatePlayerState } = usePlayerMutations();
+    const { updateTransitionInProcess } = useAutoMixMutation();
+
+    function startTransition(start: number, end: number, durationInSeconds: number) {
+        let startT = start;
+        let endT = end;
+        let current = startT;
+        let steps = 100;
+        let stepSize = (endT - startT) / steps;
+        let interval = (durationInSeconds * 1000) / steps;
+
+        function update() {
+
+            setVolume([current]);
+
+            let reachedEnd = (stepSize > 0) ? current >= endT : current <= endT;
+
+            if (reachedEnd) {
+                setVolume([endT]);
+                updateTransitionInProcess.mutate({ newValue: false });
+            } else {
+                current += stepSize;
+                setTimeout(update, interval);
+            }
+        }
+
+        update();
+    }
+
+
+
+    useEffect(() => {
+        if (crossfader.transitionInProcess) {
+            if (crossfader.position < 0) {
+                startTransition(crossfader.position, 50, crossfader.autoMixDuration)
+                if (deckB === "paused") {
+                    updatePlayerState.mutate({ state: 'playing', deck: "deckB" })
+                }
+
+                if (deckB === "playing") {
+                    updatePlayerState.mutate({ state: 'resume', deck: "deckB" })
+                }
+            }
+            if (crossfader.position > 0) {
+                startTransition(crossfader.position, -50, crossfader.autoMixDuration)
+                if (deckA === "paused") {
+                    updatePlayerState.mutate({ state: 'playing', deck: "deckA" })
+                }
+
+                if (deckA === "playing") {
+                    updatePlayerState.mutate({ state: 'resume', deck: "deckA" })
+                }
+            }
+        }
+    }, [crossfader.transitionInProcess]);
 
 
     const setVolume = (value: number[]) => {
@@ -30,37 +88,11 @@ export default function HorizontalSlider({ crossfader }: HorizontalSliderProps) 
         updateVolume.mutate(dataVolB);
     };
 
-    const autoTransitionCrossfader = (
-        startValue: number, 
-        endValue: number,   
-        duration: number    
-    ) => {
-        const stepTime = 10; 
-        const totalSteps = duration / stepTime;
-        const valueStep = (endValue - startValue) / totalSteps;
-
-        let currentStep = 0;
-        let currentValue = startValue;
-
-        const intervalId = setInterval(() => {
-            currentStep += 1;
-            currentValue = startValue + valueStep * currentStep;
-
-            setVolume([currentValue]);
-
-            if (currentStep >= totalSteps) {
-                clearInterval(intervalId); 
-            }
-        }, stepTime);
-    };
-
-    
-
     return (
         <div className='w-[100%] flex h-[70%] items-center justify-center'>
             <Slider.Root
                 orientation="horizontal"
-                value={[crossfader.position]} 
+                value={[crossfader.position]}
                 max={50}
                 min={-50}
                 step={1}

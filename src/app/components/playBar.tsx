@@ -1,12 +1,14 @@
 import * as Slider from '@radix-ui/react-slider';
 import { useEffect, useState } from 'react';
 import { GetTimeless } from '../utils/timeFunc';
-import { usePlayerMutations } from '../hooks/mutations';
+import { usePlayerMutations, useAutoMixMutation } from '../hooks/mutations';
 
 interface CrossFader {
     position: number;
     autoMixStartAt: number;
     autoMixDuration: number;
+    transitionInProcess: boolean;
+    autoMix: boolean;
 }
 
 interface ProgressBarParams {
@@ -15,6 +17,8 @@ interface ProgressBarParams {
     deck: string;
     seekTo: number;
     crossFader?: CrossFader;
+    volume: number,
+    loop: boolean
 }
 
 interface ProgressBarProps {
@@ -28,18 +32,27 @@ export default function ProgressBar({ data }: ProgressBarProps) {
     const [hoverTime, setHoverTime] = useState<string | null>(null);
     const [fadeWidth, setFadeWidth] = useState<number | undefined>(0)
     const { updateSeekTo } = usePlayerMutations()
-
+    const { updateTransitionInProcess } = useAutoMixMutation()
 
     useEffect(() => {
+
         if (data.duration > 0) {
             const progressPercent = (data.time / data.duration) * 100;
             const timeR = data.duration - data.time;
             const lessTime = GetTimeless(timeR);
             setRemainingTime(lessTime);
             setProgress(progressPercent);
+
+            if (data.crossFader?.autoMix
+                && data.crossFader?.autoMixDuration
+                && data.time > data.duration - data.crossFader.autoMixDuration
+                && data.crossFader.transitionInProcess === false) {
+                updateTransitionInProcess.mutate({ newValue: true })
+            }
         }
 
     }, [data.time, data.duration]);
+
 
     useEffect(() => {
         if (data.crossFader && data.duration > 0) {
@@ -141,7 +154,7 @@ export default function ProgressBar({ data }: ProgressBarProps) {
                         borderRadius: 3,
                         right: 0,
                         filter: 'blur(1px)',
-                        pointerEvents:"none",
+                        pointerEvents: "none",
                     }}>
                     </div>
 
@@ -154,7 +167,7 @@ export default function ProgressBar({ data }: ProgressBarProps) {
                         borderRadius: 3,
                         left: 0,
                         filter: 'blur(1px)',
-                        pointerEvents:"none",
+                        pointerEvents: "none",
                     }}>
                     </div>
 

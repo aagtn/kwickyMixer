@@ -9,7 +9,7 @@ import ProgressBar from './playBar';
 interface VideoObj {
     id: string;
     title: string;
-    image:string;
+    image: string;
 }
 
 interface DataObj {
@@ -18,28 +18,30 @@ interface DataObj {
     volume: number;
     playState: string;
     selectedVideo: string;
-    image:string;
-    loop:boolean;
-    currentTime:number;
-    trackDuration:number;
-    seekTo:number;
+    image: string;
+    loop: boolean;
+    currentTime: number;
+    trackDuration: number;
+    seekTo: number;
 }
 
 interface CrossFader {
-    position:number;
-    autoMixStartAt:number;
-    autoMixDuration:number;
-  }
+    position: number;
+    autoMixStartAt: number;
+    autoMixDuration: number;
+    transitionInProcess:boolean;
+    autoMix:boolean;
+}
 
 interface DeckCpnProps {
     deckId: string;
     data?: DataObj;
-    crossfader?:CrossFader
+    crossfader?: CrossFader
 }
 
 
-export default function DeckCpnt({ deckId, data, crossfader }: DeckCpnProps ) {
-    if (!data ) {
+export default function DeckCpnt({ deckId, data, crossfader }: DeckCpnProps) {
+    if (!data) {
         return <div>Loading...</div>;
     }
 
@@ -48,10 +50,28 @@ export default function DeckCpnt({ deckId, data, crossfader }: DeckCpnProps ) {
         <div className="w-[40%] flex flex-col items-center p-5 ">
             <InputSearch data={data.searchInput} deckId={deckId} />
             <ScreenResult data={data} deckId={deckId} />
-            <Screen data={{selectedVideo : data.selectedVideo , playState : data.playState, volume:data.volume, loop:data.loop, deck:deckId,seekTo:data.seekTo}} />
-            <ProgressBar data={{time:data.currentTime, duration : data.trackDuration, deck:deckId, seekTo:data.seekTo,crossFader:crossfader}} />
-            <Vynil data={data.image}/>
-            <Controls data={{playState : data.playState,loop : data.loop}} deckId={deckId}/>
+            <Screen
+                data={{
+                    selectedVideo: data.selectedVideo,
+                    playState: data.playState,
+                    volume: data.volume,
+                    loop: data.loop,
+                    deck: deckId,
+                    seekTo: data.seekTo,
+                    image: data.image,
+                }} />
+            <ProgressBar
+                data={{
+                    time: data.currentTime,
+                    duration: data.trackDuration,
+                    deck: deckId,
+                    seekTo: data.seekTo,
+                    crossFader: crossfader,
+                    volume:data.volume,
+                    loop:data.loop,
+                }} />
+            <Vynil data={data.image} />
+            <Controls data={{ playState: data.playState, loop: data.loop }} deckId={deckId} />
         </div>
     )
 

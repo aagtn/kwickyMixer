@@ -26,7 +26,8 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
-
+    
+    
     if (!player) return;
 
     if (data.playState === 'playing') {
@@ -37,6 +38,11 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
       player.seekTo(0);
     }
   }, [data.playState]);
+
+  useEffect(()=>{
+  const player = playerRef.current?.internalPlayer
+  player.cuePlaylist(data.selectedVideo)
+  },[data.selectedVideo])
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
@@ -59,10 +65,6 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
 
   const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
     const player = event.target;
-    const duration = player.getDuration()
-
-    updateDuration.mutate({currentTime:duration,deck: data.deck})
-
     if (data?.volume !== undefined) {
       player.setVolume(data.volume);
     }
@@ -84,6 +86,8 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
     const player = playerRef.current?.internalPlayer
     const playerState = await player.getPlayerState()
     const currentTime = await player.getCurrentTime()
+    const duration = player.getDuration()
+    updateDuration.mutate({currentTime:duration,deck: data.deck})
     if (player && playerState === 1) {
       requestAnimationFrame(updateProgress);
       updateCurrentTime.mutate({ currentTime, deck: data.deck});
@@ -95,6 +99,7 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
     height: '250px',
     width: '100%',
     playerVars: {
+      playlist:[],
       autoplay: 0,
       controls: 0,
       iv_load_policy: 3,
@@ -104,8 +109,7 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   };
 
   return (
-    <YouTube
-      videoId={data.selectedVideo}
+    <YouTube 
       onReady={handlePlayerReady}
       onStateChange={updateProgress}
       onEnd={handleEnd}

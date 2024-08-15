@@ -177,7 +177,40 @@ function useAutoMixMutation (){
         }
     });
 
-    return {updateAutoMixDuration,updateAutoMixStart}
+    const updateTransitionInProcess = useMutation({
+        mutationFn: ({ newValue}: { newValue: boolean }) => {
+            return Promise.resolve(newValue);
+        },
+        onSuccess: (value) => {
+            queryClient.setQueryData(["mixer"], (oldData: any) => {
+                return {
+                    ...oldData,
+                    transitionInProcess: value
+
+                };
+            });
+        }
+        
+    });
+
+
+    const updateAutoMixState = useMutation({
+        mutationFn: ({ newValue}: { newValue: boolean }) => {
+            return Promise.resolve(newValue);
+        },
+        onSuccess: (value) => {
+            queryClient.setQueryData(["mixer"], (oldData: any) => {
+                return {
+                    ...oldData,
+                    autoMix: value
+
+                };
+            });
+        }
+        
+    });
+
+    return {updateAutoMixDuration,updateAutoMixStart,updateTransitionInProcess,updateAutoMixState}
 }
 
 export { usePlayerMutations, useSearchInputMutations, useAutoMixMutation }

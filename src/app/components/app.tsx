@@ -32,9 +32,8 @@ export default function App() {
         if (dataCrossFader) {
             const crossfaderValue = dataCrossFader.position;
 
-            // Calculate opacities based on the crossfader value
-            const opacityA = 1 - (crossfaderValue + 50) / 100; // From 1 to 0
-            const opacityB = (crossfaderValue + 50) / 100; // From 0 to 1
+            const opacityA = 1 - (crossfaderValue + 50) / 100; 
+            const opacityB = (crossfaderValue + 50) / 100; 
 
             setBgOpacityA(opacityA);
             setBgOpacityB(opacityB);

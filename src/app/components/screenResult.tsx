@@ -1,7 +1,7 @@
 import '../styles/screenResult.css';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 import Image from 'next/image';
-import { useSearchInputMutations } from '../hooks/mutations';
+import { useSearchInputMutations,usePlayerMutations } from '../hooks/mutations';
 import { useEffect } from 'react';
 
 interface VideoObj {
@@ -25,11 +25,12 @@ interface DataObj {
 
 export default function ScreenResult({ data, deckId }: { data: DataObj, deckId: string }) {
     const { updateSelectedVideo } = useSearchInputMutations()
-
+    const { updatePlayerState } = usePlayerMutations()
 
     const handleSelectedVideo = (event: React.MouseEvent<HTMLInputElement>) => {
         const key = event.currentTarget.getAttribute('data-key');
         if (key) {
+            updatePlayerState.mutate({state:'paused', deck:deckId})
             updateSelectedVideo.mutate({ newVideoId: key, deck: deckId });
         }
     }

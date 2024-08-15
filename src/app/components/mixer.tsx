@@ -20,6 +20,7 @@ interface CrossFader {
     position: number;
     autoMixStartAt: number;
     autoMixDuration: number;
+    transitionInProcess:boolean
 }
 
 interface Data {
@@ -48,7 +49,7 @@ export default function MixerCpnt({ data }: MixerProps) {
                     </div>
                 </div>
                 <div className="h-[10%] w-full flex">
-                    <HorizontalSlider crossfader={data.crossfader} />
+                    <HorizontalSlider crossfader={data.crossfader} deckA={data.deckA?.playState} deckB={data.deckB?.playState}/>
                 </div>
                 <div className="w-full h-[20%] flex items-center justify-center">
                     <AutoMixBtn />
