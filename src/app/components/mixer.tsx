@@ -20,7 +20,7 @@ interface CrossFader {
     position: number;
     autoMixStartAt: number;
     autoMixDuration: number;
-    transitionInProcess:boolean
+    transitionInProcess:boolean;
 }
 
 interface Data {

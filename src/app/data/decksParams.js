@@ -6,10 +6,11 @@ const deckA = {
     playState: 'paused', /// playing | paused | resume 
     selectedVideo : "VGfayDKveAs",
     image:"https://i.ytimg.com/vi/VGfayDKveAs/hqdefault.jpg",
-    loop:true,
+    loop:false,
     currentTime:0,
     trackDuration:0,
     seekTo:0,
+    playlist:[{"id":"VGfayDKveAs","title":"Max Cooper - Waves (official video by Kevin McGloughlin)","image":"https://i.ytimg.com/vi/VGfayDKveAs/hqdefault.jpg"},{"id":"GvwayRd9gbw","title":"Max Cooper - Everything (Official video by Nick Cobby)","image":"https://i.ytimg.com/vi/GvwayRd9gbw/hqdefault.jpg"},{"id":"owdva7V2M0o","title":"Max Cooper - Live at the Barbican (Yearning for the Infinite)","image":"https://i.ytimg.com/vi/owdva7V2M0o/hqdefault.jpg"}]
 }
 
 const deckB = {
@@ -20,10 +21,11 @@ const deckB = {
     playState: 'paused', /// playing | paused | resume 
     selectedVideo : "0x0t1l7QeeY",
     image:"https://i.ytimg.com/vi/0x0t1l7QeeY/hqdefault.jpg",
-    loop:true,
+    loop:false,
     currentTime:0,
     trackDuration:0,
     seekTo:0,
+    playlist:[{"id":"0x0t1l7QeeY","title":"Floating Points - Last Bloom (Official Video)","image":"https://i.ytimg.com/vi/0x0t1l7QeeY/hqdefault.jpg"},{"id":"FvlyttLEQlk","title":"Floating Points, Pharoah Sanders &amp; The London Symphony Orchestra - Promises [Movement 1]","image":"https://i.ytimg.com/vi/FvlyttLEQlk/hqdefault.jpg"},{"id":"7iedUG5Kpis","title":"Floating Points - &#39;Del Oro&#39; (Official Video)","image":"https://i.ytimg.com/vi/7iedUG5Kpis/hqdefault.jpg"}]
 }
 
 const crossFader = {

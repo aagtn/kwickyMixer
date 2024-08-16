@@ -3,7 +3,6 @@ import InputSearch from './inputSearch';
 import ScreenResult from './screenResult';
 import Screen from './screen';
 import Controls from './controls';
-import Vynil from './vynil';
 import ProgressBar from './playBar';
 
 interface VideoObj {
@@ -23,6 +22,8 @@ interface DataObj {
     currentTime: number;
     trackDuration: number;
     seekTo: number;
+    playlist:VideoObj[];
+    playlistActive?:boolean;
 }
 
 interface CrossFader {
@@ -41,7 +42,7 @@ interface DeckCpnProps {
 
 
 export default function DeckCpnt({ deckId, data, crossfader }: DeckCpnProps) {
-    if (!data) {
+    if (!data ) {
         return <div>Loading...</div>;
     }
 
@@ -59,6 +60,7 @@ export default function DeckCpnt({ deckId, data, crossfader }: DeckCpnProps) {
                     deck: deckId,
                     seekTo: data.seekTo,
                     image: data.image,
+                    playlist:data.playlist
                 }} />
             <ProgressBar
                 data={{
@@ -70,7 +72,6 @@ export default function DeckCpnt({ deckId, data, crossfader }: DeckCpnProps) {
                     volume:data.volume,
                     loop:data.loop,
                 }} />
-            <Vynil data={data.image} />
             <Controls data={{ playState: data.playState, loop: data.loop }} deckId={deckId} />
         </div>
     )

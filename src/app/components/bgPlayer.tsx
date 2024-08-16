@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect,useState } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import { usePlayerMutations } from '../hooks/mutations';
 import Image from 'next/image';
@@ -22,9 +22,10 @@ export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerP
   }
 
   useEffect(() => {
-
+    
     const player = playerRef.current?.internalPlayer;
-
+    
+    
     if (!player) return;
 
     if (data.playState === 'playing') {
@@ -33,6 +34,12 @@ export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerP
       player.pauseVideo();
     } else if (data.playState === 'resume') {
       player.seekTo(0);
+    }
+
+    if(data.loop){
+      player.setLoop(true)
+    }else{
+      player.setLoop(false)
     }
 
   }, [data.playState]);
@@ -54,11 +61,6 @@ export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerP
   }, [data.seekTo])
 
   const handleEnd = () => {
-    const player = playerRef.current?.internalPlayer
-    if (data.loop) {
-      player.playVideo()
-    }
-
     if (!data.loop) {
       updatePlayerState.mutate({ state: 'paused', deck: deckId })
     }
@@ -89,13 +91,13 @@ export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerP
 
   return (
     <div className={`relative w-[100%] h-[100%] scale-[1] ${data.playState === "playing" ? 'translate-x-[-25%]' : "blur-[50px]"}`}>
-      {data.playState === "paused" &&
+      {/* {data.playState === "paused" &&
         <Image src={data.image} width={1000} height={600} alt='cover' className='w-full h-full object-cover object-center scale-150' />
-      }
+      } */}
       <YouTube
         ref={playerRef}
         onReady={handlePlayerReady}
-        onEnd={handleEnd}
+        onEnd={handleEnd}        
         opts={opts}
         className='h-[100%] w-[100%] ' />
     </div>

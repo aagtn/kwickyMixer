@@ -46,7 +46,8 @@ export default function ProgressBar({ data }: ProgressBarProps) {
             if (data.crossFader?.autoMix
                 && data.crossFader?.autoMixDuration
                 && data.time > data.duration - data.crossFader.autoMixDuration
-                && data.crossFader.transitionInProcess === false) {
+                && data.crossFader.transitionInProcess === false
+                &&data.crossFader.autoMix) {
                 updateTransitionInProcess.mutate({ newValue: true })
             }
         }

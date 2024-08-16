@@ -82,7 +82,7 @@ function usePlayerMutations() {
             return Promise.resolve(dataCross);
         },
         onSuccess: (data) => {
-            queryClient.setQueryData(['mixer'], (oldData:any) => ({
+            queryClient.setQueryData(['mixer'], (oldData: any) => ({
                 ...oldData,
                 position: data,
             }));
@@ -90,11 +90,11 @@ function usePlayerMutations() {
     });
 
 
-        const updateSeekTo = useMutation({
-        mutationFn: async ({currentTime,deck,trackDuration}:{currentTime:number,deck:string,trackDuration:number}) => {
+    const updateSeekTo = useMutation({
+        mutationFn: async ({ currentTime, deck, trackDuration }: { currentTime: number, deck: string, trackDuration: number }) => {
             return Promise.resolve(currentTime);
         },
-        onSuccess: (time,variables) => {
+        onSuccess: (time, variables) => {
             const progressInSec = (time / 100) * variables.trackDuration;
             queryClient.setQueryData([variables.deck], (oldData: any) => ({
                 ...oldData,
@@ -103,7 +103,65 @@ function usePlayerMutations() {
         }
     });
 
-    return { updateCurrentTime, updateDuration, updatePlayerState, updateLoopState, updateVolume, updateCrossFader, updateSeekTo };
+    interface Playlist {
+        id: string,
+        image?: string,
+        title?: string,
+    }
+
+    const updatePlaylist = useMutation({
+        mutationFn: async ({ data, deck, action }: { data: Playlist, deck: string, action: string }) => {
+            return Promise.resolve(data);
+        },
+        onSuccess: (newData, variables) => {
+            if (variables.action === "add") {
+                queryClient.setQueryData([variables.deck], (oldData: any) => ({
+                    ...oldData,
+                    playlist: [...(oldData?.playlist || []), newData],
+                }));
+            }
+
+            if (variables.action === "playnext") {
+                const moveItem = (array:any[], fromIndex:number, toIndex:number) => {
+                    const item = array.splice(fromIndex, 1)[0]; 
+                    array.splice(toIndex, 0, item);
+                    return array;  
+                }
+            
+                queryClient.setQueryData([variables.deck], (oldData: any) => {
+                    const updatedPlaylist = moveItem([...oldData.playlist], 1, 3); 
+                    return {
+                        ...oldData,  
+                        playlist: updatedPlaylist, 
+                    };
+                });
+            }
+
+            if (variables.action === "remove") {
+                queryClient.setQueryData([variables.deck], (oldData: any) => ({
+                    ...oldData,
+                    playlist: oldData?.playlist.filter((item: Playlist) => item.id !== newData.id), 
+                }));
+            }
+        }
+    });
+
+
+    const updateActivePlaylist = useMutation({
+        mutationFn: async ({ state, deck }: { state: boolean, deck: string }) => {
+            return Promise.resolve(state);
+        },
+        onSuccess: (newState, variables) => {
+            queryClient.setQueryData([variables.deck], (oldData: any) => ({
+                ...oldData,
+                playlistActive: newState,
+            }));
+        }
+    });
+
+
+
+    return { updateCurrentTime, updateDuration, updatePlayerState, updateLoopState, updateVolume, updateCrossFader, updateSeekTo, updatePlaylist, updateActivePlaylist };
 }
 
 function useSearchInputMutations() {
@@ -140,15 +198,17 @@ function useSearchInputMutations() {
         }
     });
 
+
+
     return { updateDeckSearchInput, updateSelectedVideo }
-    
+
 }
 
-function useAutoMixMutation (){
+function useAutoMixMutation() {
     const queryClient = useQueryClient()
 
     const updateAutoMixDuration = useMutation({
-        mutationFn: ({ newValue}: { newValue: number }) => {
+        mutationFn: ({ newValue }: { newValue: number }) => {
             return Promise.resolve(newValue);
         },
         onSuccess: (value) => {
@@ -163,7 +223,7 @@ function useAutoMixMutation (){
     });
 
     const updateAutoMixStart = useMutation({
-        mutationFn: ({ newValue}: { newValue: number }) => {
+        mutationFn: ({ newValue }: { newValue: number }) => {
             return Promise.resolve(newValue);
         },
         onSuccess: (value) => {
@@ -178,7 +238,7 @@ function useAutoMixMutation (){
     });
 
     const updateTransitionInProcess = useMutation({
-        mutationFn: ({ newValue}: { newValue: boolean }) => {
+        mutationFn: ({ newValue }: { newValue: boolean }) => {
             return Promise.resolve(newValue);
         },
         onSuccess: (value) => {
@@ -190,12 +250,12 @@ function useAutoMixMutation (){
                 };
             });
         }
-        
+
     });
 
 
     const updateAutoMixState = useMutation({
-        mutationFn: ({ newValue}: { newValue: boolean }) => {
+        mutationFn: ({ newValue }: { newValue: boolean }) => {
             return Promise.resolve(newValue);
         },
         onSuccess: (value) => {
@@ -207,10 +267,10 @@ function useAutoMixMutation (){
                 };
             });
         }
-        
+
     });
 
-    return {updateAutoMixDuration,updateAutoMixStart,updateTransitionInProcess,updateAutoMixState}
+    return { updateAutoMixDuration, updateAutoMixStart, updateTransitionInProcess, updateAutoMixState }
 }
 
 export { usePlayerMutations, useSearchInputMutations, useAutoMixMutation }
