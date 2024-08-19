@@ -10,7 +10,7 @@ interface DataObj {
     videos: VideoObj[];
     volume: number;
     playState: string;
-    selectedVideo: string;
+    selectedVideo: VideoObj;
 }
 
 interface DataDeck {

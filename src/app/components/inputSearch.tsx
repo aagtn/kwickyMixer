@@ -1,7 +1,7 @@
 import '../styles/searchInput.css';
 import { Button } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
-import { useSearchInputMutations ,usePlayerMutations} from '../hooks/mutations';
+import { useMutations} from '../hooks/mutations';
 import Image from 'next/image';
 
 interface InputSearchProps {
@@ -11,8 +11,8 @@ interface InputSearchProps {
 
 export default function InputSearch({ data, deckId }: InputSearchProps) {
 
-    const { updateDeckSearchInput } = useSearchInputMutations();
-    const { updateActivePlaylist } = usePlayerMutations()
+    const { updateDeckSearchInput,updateActivePlaylist } = useMutations();
+
     const [inputValue, setInputValue] = useState<string>(data);
     const [playlistActive, setPlaylistActive] = useState(false)
 
@@ -48,9 +48,10 @@ export default function InputSearch({ data, deckId }: InputSearchProps) {
                     />
                 </div>
                 <div className="btn-morph">
-                    <Button type="submit" variant="surface" className="ml-4 p-2 cursor-pointer">
+                    <Button loading={updateDeckSearchInput.isPending ? true : false} type="submit" variant="surface" className="ml-4 p-2 cursor-pointer">
                         Search
                     </Button>
+                
                 </div>
             </div>
         </form>

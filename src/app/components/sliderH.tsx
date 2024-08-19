@@ -1,7 +1,7 @@
 import '../styles/sliders.css';
 import * as Slider from '@radix-ui/react-slider';
 import Mixer from '../utils/mixer';
-import { usePlayerMutations, useAutoMixMutation } from '../hooks/mutations';
+import { useMutations } from '../hooks/mutations';
 import { useEffect, useState } from 'react';
 
 interface CrossFader {
@@ -19,8 +19,8 @@ interface HorizontalSliderProps {
 
 export default function HorizontalSlider({ crossfader, deckA, deckB }: HorizontalSliderProps) {
 
-    const { updateVolume, updateCrossFader, updatePlayerState } = usePlayerMutations();
-    const { updateTransitionInProcess } = useAutoMixMutation();
+    const { updateVolume, updateCrossFader, updatePlayerState, updateTransitionInProcess } = useMutations();
+    
 
     function startTransition(start: number, end: number, durationInSeconds: number) {
         let startT = start;

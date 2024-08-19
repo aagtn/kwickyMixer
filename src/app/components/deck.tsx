@@ -16,8 +16,7 @@ interface DataObj {
     videos: VideoObj[];
     volume: number;
     playState: string;
-    selectedVideo: string;
-    image: string;
+    selectedVideo: VideoObj;
     loop: boolean;
     currentTime: number;
     trackDuration: number;
@@ -59,7 +58,6 @@ export default function DeckCpnt({ deckId, data, crossfader }: DeckCpnProps) {
                     loop: data.loop,
                     deck: deckId,
                     seekTo: data.seekTo,
-                    image: data.image,
                     playlist:data.playlist
                 }} />
             <ProgressBar

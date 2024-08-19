@@ -1,7 +1,7 @@
 import '../styles/AutoMix.css'
 import * as Popover from '@radix-ui/react-popover';
 import { MixerHorizontalIcon, Cross2Icon } from '@radix-ui/react-icons';
-import { useAutoMixMutation } from '../hooks/mutations';
+import { useMutations } from '../hooks/mutations';
 
 interface CrossFader {
   position:number;
@@ -14,12 +14,8 @@ interface CrossFaderProps{
 }
 
 export default function AutoMixParams({data}:CrossFaderProps){
-  const {updateAutoMixStart,updateAutoMixDuration} = useAutoMixMutation()
+  const {updateAutoMixDuration} = useMutations()
 
-  const handleUpdateStartAt = (event:React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(event.target.value);
-    updateAutoMixStart.mutate({newValue});
-  } 
 
   const handleUpdateDuration = (event:React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(event.target.value);
@@ -39,13 +35,6 @@ export default function AutoMixParams({data}:CrossFaderProps){
               <p className="Text" style={{ marginBottom: 10 }}>
                 Auto fade
               </p>
-             
-              {/* <fieldset className="Fieldset">
-                <label className="Label" htmlFor="width">
-                  Start at
-                </label>
-                <input className="Input-prop" id="width" onChange={handleUpdateStartAt} defaultValue={data.autoMixStartAt} type='number' min={-30} max={0}/>
-              </fieldset> */}
               <fieldset className="Fieldset">
                 <label className="Label" htmlFor="width">
                   Duration

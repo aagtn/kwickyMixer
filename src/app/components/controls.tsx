@@ -1,6 +1,8 @@
 'use client'
-import { PlayIcon, PauseIcon, ResumeIcon, LoopIcon } from '@radix-ui/react-icons';
-import { usePlayerMutations } from '../hooks/mutations';
+import { PlayIcon, PauseIcon, ResumeIcon, LoopIcon, TrackNextIcon, TrackPreviousIcon } from '@radix-ui/react-icons';
+import { useMutations } from '../hooks/mutations';
+import { useEffect, useState } from 'react';
+import React from 'react';
 
 
 interface ControlsParams {
@@ -15,7 +17,9 @@ interface ControlsProps {
 
 export default function Controls({ data, deckId }: ControlsProps) {
 
-    const { updatePlayerState, updateLoopState } = usePlayerMutations()
+    const { updatePlayerState, updateLoopState, playNextTrack,playPreviousTrack } = useMutations()
+    const [next,setNext] = useState(false)
+    const [prev,setPrev] = useState(false)
 
     const handlePlayingState = (event: React.MouseEvent<HTMLDivElement>) => {
         const dataState = event.currentTarget.getAttribute('data-state');
@@ -37,9 +41,42 @@ export default function Controls({ data, deckId }: ControlsProps) {
         }
     };
 
+    const handleNextTrack = (event: React.MouseEvent<HTMLDivElement>) => {
+        setNext(true)
+        playNextTrack.mutate(deckId)
+    }
+
+    const handlePreviousTrack = (event: React.MouseEvent<HTMLDivElement>) => {
+        setPrev(true)
+        playPreviousTrack.mutate(deckId)
+    }
+
+    useEffect(()=>{
+        setTimeout(()=>{
+            setNext(false)
+            setPrev(false)
+        },200)
+    },[next,prev])
 
     return (
         <div className={`w-full mt-8 flex `}>
+
+            {/* Previous Button */}
+            <div className='flex flex-col justify-center items-center mr-6'>
+                <div
+                    className='btn-morph p-4 cursor-pointer'
+                    data-state={"resume"}
+                    onClick={handlePreviousTrack}
+                >
+                    <TrackPreviousIcon className=' w-[20px] h-[20px] rgba(255,255,255,.6)' color={prev ? '#9db1ff' : "rgba(255,255,255,.6"} />
+                </div>
+                <div className='flex items-center justify-center mt-4'>
+                    <div className={`absolute border border-black rounded-full z-20 ${prev ? "w-[2px] h-[2px] bg-blue-600 border-0" : ""}`}></div>
+                    <div className={`w-[5px] h-[5px] rounded-full z-10 ${prev ? "bg-blue-600 blur-[2px] border-0" : ""}`}></div>
+                    <div className='absolute w-[4px] h-[4px] bg-black rounded-full'></div>
+                </div>
+            </div>
+
             {/* Resume Button */}
             <div className='flex flex-col justify-center items-center mr-6'>
                 <div
@@ -57,7 +94,6 @@ export default function Controls({ data, deckId }: ControlsProps) {
             </div>
 
             {/* Play / Pause Button */}
-
 
             <div className='flex flex-col justify-center items-center mr-6'>
                 <div
@@ -78,6 +114,21 @@ export default function Controls({ data, deckId }: ControlsProps) {
                 </div>
             </div>
 
+            {/* Next Button */}
+            <div className='flex flex-col justify-center items-center mr-6'>
+                <div
+                    className='btn-morph p-4 cursor-pointer'
+                    data-state={"resume"}
+                    onClick={handleNextTrack}
+                >
+                    <TrackNextIcon className='w-[20px] h-[20px] rgba(255,255,255,.6)' color={next ? '#9db1ff' : "rgba(255,255,255,.6"}  />
+                </div>
+                <div className='flex items-center justify-center mt-4'>
+                    <div className={`absolute border border-black rounded-full z-20 ${next ? "w-[2px] h-[2px] bg-blue-600 border-0" : ""}`}></div>
+                    <div className={`w-[5px] h-[5px] rounded-full z-10 ${next ? "bg-blue-600 border-0 blur-[2px]" : ""}`}></div>
+                    <div className='absolute w-[4px] h-[4px] bg-black rounded-full'></div>
+                </div>
+            </div>
 
             {/* Loop Button */}
             <div className='flex flex-col justify-center items-center mr-6'>

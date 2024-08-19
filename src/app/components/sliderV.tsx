@@ -2,7 +2,7 @@
 import '../styles/sliders.css'
 import * as Slider from '@radix-ui/react-slider';
 import { useState } from 'react';
-import { usePlayerMutations } from '../hooks/mutations';
+import { useMutations } from '../hooks/mutations';
 import StandByMode from './standByMode';
 interface VerticalSliderProps {
     volume: number;
@@ -10,7 +10,7 @@ interface VerticalSliderProps {
 }
 
 export default function VerticalSlider({ volume, deckId }: VerticalSliderProps) {
-    const { updateVolume } = usePlayerMutations()
+    const { updateVolume } = useMutations()
     const [volumeState, setVolumeState] = useState<number>(volume);
     const [standby, setStandBy] = useState(true)
     const setVolume = (value: number[]) => {

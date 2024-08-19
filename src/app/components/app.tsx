@@ -7,6 +7,8 @@ import BgYoutubePlayer from './bgPlayer';
 import { deckA, deckB, crossFader } from "../data/decksParams";
 import '@radix-ui/themes/styles.css';
 import { useEffect, useState } from 'react';
+import LoadingMain from './loadingMain';
+import ErrorMain from './errorMain';
 
 export default function App() {
 
@@ -40,15 +42,16 @@ export default function App() {
         }
     }, [dataCrossFader?.position]);
 
-    if (isLoadingA || isLoadingB || isLoadingC) return <div>Loading...</div>;
-    if (errorA || errorB || errorC) return <div>Error: {errorA?.message || errorB?.message || errorC?.message}</div>;
+
+    if (isLoadingA || isLoadingB || isLoadingC) return <LoadingMain/>
+    if (errorA || errorB || errorC) return <ErrorMain error={errorA || errorB || errorC}/>
 
     return (
         <Theme accentColor="indigo" appearance="dark">
           
             <div className="h-[100vh] max-h-[100vh] w-[100vw] flex">
                 <div className="flex z-10 w-full flex justify-center items-center p-8">
-                    <div className="flex w-full min-w-[100%] min-h-[80%] h-[80%] bg-[#101114] p-6 rounded-3xl">
+                    <div className="flex w-full min-w-[1100px] max-w-[2100px] max-h-[1000px] h-[80%] bg-[#101114] p-6 rounded-3xl">
                         <div className="flex w-full rounded-xl p-4 main-bg">
                             <DeckCpnt deckId={"deckA"} data={dataA} crossfader={dataCrossFader}/>
                             <MixerCpnt data={{ deckA: dataA, deckB: dataB, crossfader: dataCrossFader }} />

@@ -1,9 +1,9 @@
 import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from "react";
-import { useAutoMixMutation } from '../hooks/mutations';
+import { useMutations } from '../hooks/mutations';
 export default function AutoMixBtn() {
     const [autoTransition, setAutoTransition] = useState<boolean>(true)
-    const {updateAutoMixState} = useAutoMixMutation()
+    const {updateAutoMixState} = useMutations()
     
     const handleAutoTrans = () => {
         setAutoTransition((prev)=> !prev)

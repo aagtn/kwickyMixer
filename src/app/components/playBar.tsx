@@ -1,7 +1,7 @@
 import * as Slider from '@radix-ui/react-slider';
 import { useEffect, useState } from 'react';
 import { GetTimeless } from '../utils/timeFunc';
-import { usePlayerMutations, useAutoMixMutation } from '../hooks/mutations';
+import { useMutations } from '../hooks/mutations';
 
 interface CrossFader {
     position: number;
@@ -31,8 +31,8 @@ export default function ProgressBar({ data }: ProgressBarProps) {
     const [hoverPercent, setHoverPercent] = useState<number | null>(null);
     const [hoverTime, setHoverTime] = useState<string | null>(null);
     const [fadeWidth, setFadeWidth] = useState<number | undefined>(0)
-    const { updateSeekTo } = usePlayerMutations()
-    const { updateTransitionInProcess } = useAutoMixMutation()
+    const { updateSeekTo, updateTransitionInProcess } = useMutations()
+    
 
     useEffect(() => {
 

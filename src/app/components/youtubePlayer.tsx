@@ -1,8 +1,9 @@
 'use client';
 import { use, useEffect, useRef } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
-import { usePlayerMutations } from '../hooks/mutations';
-import { useSearchInputMutations } from '../hooks/mutations';
+import { useMutations } from '../hooks/mutations';
+import { deckA } from '../data/decksParams';
+
 interface VideoObj {
   id: string;
   title: string;
@@ -10,7 +11,7 @@ interface VideoObj {
 }
 
 interface YoutubePlayerPropsData {
-  selectedVideo: string;
+  selectedVideo: VideoObj;
   playState: string;
   volume: number;
   loop: boolean;
@@ -26,9 +27,9 @@ interface YoutubePlayerProps {
 
 export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   const playerRef = useRef<YouTube>(null);
-  const { updateCurrentTime, updateDuration, } = usePlayerMutations();
-  const { updateSelectedVideo } = useSearchInputMutations();
+  const { updateCurrentTime, updateDuration, playNextTrack } = useMutations();
   
+
   if (!data) {
     return <div className='p-6 w-full min-h-[250px]'>Waiting for a track...</div>;
   }
@@ -37,7 +38,7 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
     const player = playerRef.current?.internalPlayer;
 
     if (!player) return;
-
+    
     if (data.playState === 'playing') {
       player.playVideo();
     } else if (data.playState === 'paused') {
@@ -56,9 +57,9 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer
-    player.cuePlaylist(data.selectedVideo)
-    player.seekTo(0);
-    player.pauseVideo();
+    if (data.selectedVideo) {
+      player.cuePlaylist(data.selectedVideo.id)
+    }
   }, [data.selectedVideo])
 
   useEffect(() => {
@@ -79,12 +80,11 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
 
   }, [data.seekTo])
 
-  useEffect(() => {
-    const player = playerRef.current?.internalPlayer;
-    player.cuePlaylist(data.playlist)
-  }, [data.playlist])
+ 
 
   const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
+    
+    
     const player = event.target;
     if (data?.volume !== undefined) {
       player.setVolume(data.volume);
@@ -93,41 +93,39 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
 
 
   const updateProgress = async () => {
-
     const player = playerRef.current?.internalPlayer
     const playerState = await player.getPlayerState()
+   
+    const updateTime = async () => {
     const currentTime = await player.getCurrentTime()
     const duration = player.getDuration()
     updateDuration.mutate({ currentTime: duration, deck: data.deck })
+      
     if (player && playerState === 1) {
-      requestAnimationFrame(updateProgress);
-      updateCurrentTime.mutate({ currentTime, deck: data.deck });
+      requestAnimationFrame(updateTime);
+      updateCurrentTime.mutate({ currentTime, deck: data.deck });     
     }
+  }
 
-  };
+  if(playerState
+    && data.playState === "playing"
+    && data.volume > 50){
+    player.playVideo()
+  }
+  
+  updateTime()
+
+  }
 
   const handleEnd = () => {
-    if (data.playlist && data.playlist.length > 0) {  
-      const playlist = data.playlist;
-      const playingVideo = playlist.find((elmt) => elmt.id === data.selectedVideo);
-
-      if (playingVideo) {
-        const nextIndex = playlist.indexOf(playingVideo) + 1;
-        const nextVideo = playlist[nextIndex];
-
-        if (nextVideo && nextVideo.id) {  
-          updateSelectedVideo.mutate({ newVideoId: nextVideo.id, deck: data.deck });
-        } else {
-          updateSelectedVideo.mutate({ newVideoId: playlist[0].id, deck: data.deck });
-        }
-
-      } else {
-        console.error('Selected video not found in the playlist');
-      }
+    if (data.playlist && data.playlist.length > 0) {
+      playNextTrack.mutate(data.deck)
+      
     } else {
       console.error('Playlist is empty or does not exist');
     }
-  };
+  }
+
 
   const opts: YouTubeProps['opts'] = {
     height: '250px',
@@ -140,7 +138,7 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
       modestbranding: 1,
       rel: 1
     },
-  };
+  }
 
   return (
     <YouTube

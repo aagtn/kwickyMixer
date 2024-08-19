@@ -2,8 +2,8 @@
 import * as ContextMenu from '@radix-ui/react-context-menu';
 import { PlayIcon,TrashIcon } from '@radix-ui/react-icons';
 import '../styles/contextMenu.css';
-import { usePlayerMutations } from '../hooks/mutations';
-import { useState } from 'react';
+import { useMutations } from '../hooks/mutations';
+
 
 interface VideoObj {
     id: string
@@ -12,15 +12,14 @@ interface VideoObj {
 }
 
 export default function PlaylistMenu({children,index,data,deck}:{children:any,index:number,data:VideoObj,deck:string}) {  
-    const { updatePlaylist } = usePlayerMutations()
-    const videoId = data
-
+    const { playAfter,removeFromPlaylist } = useMutations()
+    
     const handlePlayNext = () => {
-        updatePlaylist.mutate({data,deck:deck,action:"playnext"})
+         playAfter.mutate({videoId:data.id,deck:deck})
     }
 
     const handleRm = () => {
-           updatePlaylist.mutate({data,deck:deck,action:"remove"})
+        removeFromPlaylist.mutate({videoId:data.id,deck:deck})
     }
 
 
@@ -33,7 +32,7 @@ export default function PlaylistMenu({children,index,data,deck}:{children:any,in
                         Play next <div className="RightSlot"><PlayIcon/></div>
                     </ContextMenu.Item>
                     <ContextMenu.Separator className="ContextMenuSeparator" />
-                    <ContextMenu.Item className="ContextMenuItem" onClick={handleRm}>
+                    <ContextMenu.Item className="ContextMenuItem"  onClick={handleRm}>
                         Remove <div className="RightSlot"><TrashIcon/></div>
                     </ContextMenu.Item>
                 </ContextMenu.Content>

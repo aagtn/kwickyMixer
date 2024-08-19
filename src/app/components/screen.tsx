@@ -11,13 +11,12 @@ interface VideoObj {
 
 
 interface ScreenPropsData{
-    selectedVideo : string;
+    selectedVideo : VideoObj;
     playState : string;
     volume:number;
     loop:boolean;
     deck:string;
-    seekTo:number;
-    image:string;
+    seekTo:number;    
     playlist:VideoObj[];
     
 }
@@ -29,7 +28,11 @@ interface ScreenProps{
 export default function Screen({data}:ScreenProps){
 
     return(
-        <div className="w-full bg-black h-[65%] mt-2 rounded-lg overflow-hidden  screen-morph">
+        <div className="w-full bg-black h-[65%] mt-2 rounded-lg overflow-hidden pointer-events-none screen-morph">
+           
+            {data.playState === "paused"
+             && <Image src={ data.selectedVideo.image } width={400} height={350} alt={"cover"} className="object-cover w-full h-full"/>}
+           
            <YoutubePlayer data={data} />
         </div>
     )

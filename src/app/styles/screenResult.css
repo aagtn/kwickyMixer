@@ -115,6 +115,10 @@
     padding-top: 10px;
   }
 
+  .Tag:last-child{
+    margin-bottom: 20px;
+  }
+
   .selected{
     color:rgb(37 99 235);
   }
