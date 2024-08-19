@@ -21,15 +21,9 @@ interface YoutubePlayerPropsData {
 export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerPropsData, deckId: string }) {
   const playerRef = useRef<YouTube>(null);
   const { updatePlayerState } = useMutations()
-
-  if (!data) {
-    return <div className='p-6 w-full min-h-[250px]'>No track selected...</div>;
-  }
+  const player = playerRef.current?.internalPlayer;
 
   useEffect(() => {
-
-    const player = playerRef.current?.internalPlayer;
-
 
     if (!player) return;
 
@@ -51,6 +45,7 @@ export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerP
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer
+    if(!player) return
     if (data.selectedVideo) {
       player.cuePlaylist(data.selectedVideo.id)
     }
@@ -58,6 +53,7 @@ export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerP
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
+    if(!player) return
     if (data.seekTo > 0) {
       player.seekTo(data.seekTo);
       if (data.seekTo > 0 && data.playState === 'paused') {
@@ -88,7 +84,7 @@ export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerP
 
   const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
     const player = event.target;
-
+    if(!player) return
     if (data?.volume !== undefined) {
       player.setVolume(0);
     }

@@ -30,14 +30,11 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   const { updateCurrentTime, updateDuration, playNextTrack } = useMutations();
   
 
-  if (!data) {
-    return <div className='p-6 w-full min-h-[250px]'>Waiting for a track...</div>;
-  }
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
 
-    if (!player) return;
+    if ( !data || !player ) return;
     
     if (data.playState === 'playing') {
       player.playVideo();
@@ -53,32 +50,37 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
       player.setLoop(false)
     }
 
-  }, [data.playState, data.loop]);
+  }, [data?.playState, data?.loop]);
 
   useEffect(() => {
+    if(!data) return
     const player = playerRef.current?.internalPlayer
     if (data.selectedVideo) {
       player.cuePlaylist(data.selectedVideo.id)
     }
-  }, [data.selectedVideo])
+  }, [data?.selectedVideo])
 
   useEffect(() => {
+    if(!data) return
     const player = playerRef.current?.internalPlayer;
     if (player && data.volume !== undefined) {
       player.setVolume(data.volume);
     }
-  }, [data.volume]);
+  }, [data?.volume]);
 
   useEffect(() => {
+    
+    if(!data) return
+    
     const player = playerRef.current?.internalPlayer;
     if (data.seekTo > 0) {
-      player.seekTo(data.seekTo);
+      player.seekTo(data?.seekTo);
       if (data.seekTo > 0 && data.playState === 'paused') {
         player.pauseVideo()
       }
     }
 
-  }, [data.seekTo])
+  }, [data?.seekTo])
 
  
 
@@ -93,6 +95,7 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
 
 
   const updateProgress = async () => {
+    if(!data) return
     const player = playerRef.current?.internalPlayer
     const playerState = await player.getPlayerState()
    
@@ -118,6 +121,7 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   }
 
   const handleEnd = () => {
+    if(!data) return
     if (data.playlist && data.playlist.length > 0) {
       playNextTrack.mutate(data.deck)
       
