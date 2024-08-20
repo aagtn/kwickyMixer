@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import {isDesktop} from 'react-device-detect';
+import DesktopOnly from './desktopOnlyCpn';
 import { Theme } from '@radix-ui/themes';
 import { Box } from "@radix-ui/themes";
 import DeckCpnt from './deck';
@@ -43,9 +45,12 @@ export default function App() {
     }, [dataCrossFader?.position]);
 
 
+
     if (isLoadingA || isLoadingB || isLoadingC) return <LoadingMain/>
     if (errorA || errorB || errorC) return <ErrorMain error={errorA || errorB || errorC}/>
-
+    
+    if(!isDesktop) return <DesktopOnly/>
+    
     return (
         <Theme accentColor="indigo" appearance="dark">
           
