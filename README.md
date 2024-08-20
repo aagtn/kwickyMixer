@@ -57,46 +57,15 @@ To build the project for production, use the following command:
 npm run build
 ```
 
-This will create an optimized production build in the .next folder. You can then start the server with:
+This will create an optimized production build in the "out" folder. You can then start the server with:
 
 ```bash
 npm start
 ```
 
-## 👥 Contributing
+## 🤝 Contributing
 
-Contributions are welcome! If you'd like to contribute, please follow these steps:
-
-1. **Fork the repository to your GitHub account.**:
-
-2. **Clone your fork:**:
-
-```bash
-https://github.com/aagtn/kwickyMixer.git
-cd kwickyMixer
-```
-
-3. **Create a new branch for your feature or bugfix:**:
-
-```bash
-git checkout -b feature-name
-```
-
-4. **Create a new branch for your feature or bugfix:**:
-
-```bash
-git commit -m "Description of your changes"
-```
-
-5. **Create a new branch for your feature or bugfix:**:
-
-```bash
-git push origin feature-name
-```
-
-6. **Create a Pull Request from your branch to the main branch of the original repository.**:
-
-Please ensure your code follows the existing style and includes appropriate tests.
+We welcome contributions to improve KwickyMixer!
 
 ## 📄 Acknowledgments
 
