@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
 
-First, run the development server:
+![KwickyMixer Logo](./public/kwick.gif)
+
+# KwickyMixer
+
+## 🎧 Overview
+
+KwickyMixer is a web application designed to mix music tracks directly from YouTube. The app allows users to crossfade between tracks, control playback, and even loop videos. It's built with Next.js, Radix UI, and utilizes the YouTube Data API for seamless music mixing.
+
+## 🚀 Features
+
+- **Crossfade between YouTube tracks**: Smooth transitions between songs.
+- **Playback controls**: Play, pause, and resume YouTube videos.
+- **Looping**: Enable or disable looping for videos.
+- **AutoMix**: Automatically transition between tracks.
+
+## 🌟 Live Demo
+
+Check out the live demo [here](https://www.kwicky.fr/)
+
+## 🛠️ Installation
+
+To get started with KwickyMixer, follow these steps:
+
+1. **Clone the repository**:
+
+   ```bash
+   git clone https://github.com/aagtn/kwickyMixer.git
+   cd kwickyMixer
+   ```
+
+2. **Install dependencies**:
+
+```bash
+npm install
+```
+
+3. **Set up environment variables:**:
+
+Create a .env.local file in the root directory with your YouTube API key:
+YOUTUBE_API_KEY=your-youtube-api-key
+
+4. **Run the development server:**:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+ ```
+
+Open http://localhost:3000 in your browser to see the app.
+
+## 📦 Building for Production
+
+To build the project for production, use the following command:
+
+```bash
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This will create an optimized production build in the .next folder. You can then start the server with:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## 👥 Contributing
 
-## Learn More
+Contributions are welcome! If you'd like to contribute, please follow these steps:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Fork the repository to your GitHub account.**:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Clone your fork:**:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```bash
+https://github.com/aagtn/kwickyMixer.git
+cd kwickyMixer
+```
 
-## Deploy on Vercel
+3. **Create a new branch for your feature or bugfix:**:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+git checkout -b feature-name
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+4. **Create a new branch for your feature or bugfix:**:
+
+```bash
+git commit -m "Description of your changes"
+```
+
+5. **Create a new branch for your feature or bugfix:**:
+
+```bash
+git push origin feature-name
+```
+
+6. **Create a Pull Request from your branch to the main branch of the original repository.**:
+
+Please ensure your code follows the existing style and includes appropriate tests.
+
+## 📄 Acknowledgments
+
+• YouTube API
+• Radix UI
+• Next.js
+
+Thank you for checking out KwickyMixer! We hope you enjoy using it as much as we enjoyed building it.
