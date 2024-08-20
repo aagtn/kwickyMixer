@@ -59,11 +59,9 @@ To build the project for production, use the following command:
 npm run build
 ```
 
-This will create an optimized production build in the "out" folder. You can then start the server with:
+This will create an optimized production build in the "out" folder. 
 
-```bash
-npm start
-```
+
 
 ## 🤝 Contributing
 
