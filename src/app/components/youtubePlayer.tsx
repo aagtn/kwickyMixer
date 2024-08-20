@@ -25,6 +25,20 @@ interface YoutubePlayerProps {
   deckId?: string;
 }
 
+
+const opts: YouTubeProps['opts'] = {
+  height: '250px',
+  width: '100%',
+  playerVars: {
+    playlist: [],
+    autoplay: 0,
+    controls: 0,
+    iv_load_policy: 3,
+    modestbranding: 1,
+    rel: 1
+  },
+}
+
 export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   const playerRef = useRef<YouTube>(null);
   const { updateCurrentTime, updateDuration, playNextTrack } = useMutations();
@@ -130,19 +144,6 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
     }
   }
 
-
-  const opts: YouTubeProps['opts'] = {
-    height: '250px',
-    width: '100%',
-    playerVars: {
-      playlist: [],
-      autoplay: 0,
-      controls: 0,
-      iv_load_policy: 3,
-      modestbranding: 1,
-      rel: 1
-    },
-  }
 
   return (
     <YouTube

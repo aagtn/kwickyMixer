@@ -18,6 +18,21 @@ interface YoutubePlayerPropsData {
   loop: boolean;
 }
 
+
+const opts: YouTubeProps['opts'] = {
+  height: '150%',
+  width: '150%',
+  playerVars: {
+    playlist: [],
+    autoplay: 0,
+    controls: 0,
+    iv_load_policy: 3,
+    modestbranding: 1,
+    rel: 1
+  }
+};
+
+
 export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerPropsData, deckId: string }) {
   const playerRef = useRef<YouTube>(null);
   const { updatePlayerState } = useMutations()
@@ -68,19 +83,6 @@ export default function BgYoutubePlayer({ data, deckId }: { data: YoutubePlayerP
       updatePlayerState.mutate({ state: 'paused', deck: deckId })
     }
   }
-
-  const opts: YouTubeProps['opts'] = {
-    height: '150%',
-    width: '150%',
-    playerVars: {
-      playlist: [],
-      autoplay: 0,
-      controls: 0,
-      iv_load_policy: 3,
-      modestbranding: 1,
-      rel: 1
-    }
-  };
 
   const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
     const player = event.target;
