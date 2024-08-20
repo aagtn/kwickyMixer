@@ -36,12 +36,14 @@ To get started with KwickyMixer, follow these steps:
 npm install
 ```
 
-3. **Set up environment variables:**:
+3. **Set up environment variables**:
 
 Create a .env.local file in the root directory with your YouTube API key:
+```bash
 YOUTUBE_API_KEY=your-youtube-api-key
+```
 
-4. **Run the development server:**:
+4. **Run the development server**:
 
 ```bash
 npm run dev
