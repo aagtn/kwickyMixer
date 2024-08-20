@@ -28,14 +28,14 @@ interface YoutubePlayerProps {
 export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   const playerRef = useRef<YouTube>(null);
   const { updateCurrentTime, updateDuration, playNextTrack } = useMutations();
-  
+
 
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
 
-    if ( !data || !player ) return;
-    
+    if (!data || !player) return;
+
     if (data.playState === 'playing') {
       player.playVideo();
     } else if (data.playState === 'paused') {
@@ -53,7 +53,7 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   }, [data?.playState, data?.loop]);
 
   useEffect(() => {
-    if(!data) return
+    if (!data) return
     const player = playerRef.current?.internalPlayer
     if (data.selectedVideo) {
       player.cuePlaylist(data.selectedVideo.id)
@@ -61,7 +61,7 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   }, [data?.selectedVideo])
 
   useEffect(() => {
-    if(!data) return
+    if (!data) return
     const player = playerRef.current?.internalPlayer;
     if (player && data.volume !== undefined) {
       player.setVolume(data.volume);
@@ -69,9 +69,9 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   }, [data?.volume]);
 
   useEffect(() => {
-    
-    if(!data) return
-    
+
+    if (!data) return
+
     const player = playerRef.current?.internalPlayer;
     if (data.seekTo > 0) {
       player.seekTo(data?.seekTo);
@@ -82,11 +82,11 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
 
   }, [data?.seekTo])
 
- 
+
 
   const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
-    
-    
+
+
     const player = event.target;
     if (data?.volume !== undefined) {
       player.setVolume(data.volume);
@@ -95,36 +95,36 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
 
 
   const updateProgress = async () => {
-    if(!data) return
+    if (!data) return
+   
     const player = playerRef.current?.internalPlayer
     const playerState = await player.getPlayerState()
-   
-    const updateTime = async () => {
-    const currentTime = await player.getCurrentTime()
+    
     const duration = player.getDuration()
     updateDuration.mutate({ currentTime: duration, deck: data.deck })
-      
-    if (player && playerState === 1) {
+    if(playerState === 1){
+    let lastUpdateTime = 0;
+
+    const updateTime = async () => {
+      const playerCurrentTime = await player.getCurrentTime()
+      const now = Date.now();
+      if (now - lastUpdateTime > 1000) {
+        const currentTime = Math.round(playerCurrentTime)
+        updateCurrentTime.mutate({ currentTime, deck: data.deck });
+        lastUpdateTime = now;
+      }
       requestAnimationFrame(updateTime);
-      updateCurrentTime.mutate({ currentTime, deck: data.deck });     
+    };
+    updateTime()
     }
-  }
-
-  if(playerState
-    && data.playState === "playing"
-    && data.volume > 50){
-    player.playVideo()
-  }
   
-  updateTime()
-
   }
 
   const handleEnd = () => {
-    if(!data) return
+    if (!data) return
     if (data.playlist && data.playlist.length > 0) {
       playNextTrack.mutate(data.deck)
-      
+
     } else {
       console.error('Playlist is empty or does not exist');
     }

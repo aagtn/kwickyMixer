@@ -51,7 +51,7 @@ export default function App() {
           
             <div className="h-[100vh] max-h-[100vh] w-[100vw] flex">
                 <div className="flex z-10 w-full flex justify-center items-center p-8">
-                    <div className="flex w-full min-w-[1100px] max-w-[2100px] max-h-[1000px] h-[80%] bg-[#101114] p-6 rounded-3xl">
+                    <div className="flex w-full min-w-[1100px] max-w-[1400px] max-h-[700px] h-[80%] bg-[#101114] p-6 rounded-3xl">
                         <div className="flex w-full rounded-xl p-4 main-bg">
                             <DeckCpnt deckId={"deckA"} data={dataA} crossfader={dataCrossFader}/>
                             <MixerCpnt data={{ deckA: dataA, deckB: dataB, crossfader: dataCrossFader }} />
