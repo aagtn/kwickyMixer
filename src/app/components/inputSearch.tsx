@@ -1,20 +1,38 @@
 import '../styles/searchInput.css';
 import { Button } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
-import { useMutations} from '../hooks/mutations';
 import Image from 'next/image';
+import { useMutation,useQueryClient } from '@tanstack/react-query';
+import fetchYoutube from '../utils/fetchYoutubeApi';
+import { useDispatch,useSelector } from 'react-redux';
+import { DeckId,MixTable } from '../types';
+import { updateActivePlaylist } from '../store/playerSlice';
 
-interface InputSearchProps {
-    data: string;
-    deckId: string;
-}
-
-export default function InputSearch({ data, deckId }: InputSearchProps) {
-
-    const { updateDeckSearchInput,updateActivePlaylist } = useMutations();
-
-    const [inputValue, setInputValue] = useState<string>(data);
-    const [playlistActive, setPlaylistActive] = useState(false)
+export default function InputSearch({deckId}: DeckId) {
+    const queryClient = useQueryClient()
+    
+    const dispatch = useDispatch()
+    const inputData = useSelector((state:MixTable) => state.player[deckId].searchInput)
+    
+    const updateDeckSearchInput = useMutation({
+        mutationFn: async ({ newSearchInput, deck }: { newSearchInput: string, deck: string }) => {            
+            const response = await fetchYoutube({ input: newSearchInput, deck: deck })
+            return response;
+        },
+        onSuccess: (data, variables) => {
+            queryClient.setQueryData([variables.deck], (oldData: any) => {
+                return {
+                    ...oldData,
+                    searchInput: variables.newSearchInput,
+                    videos: data.videos
+                };
+            });
+        }
+    });
+    
+    
+    const [inputValue, setInputValue] = useState<string>(inputData);
+    const [playlistActive, setPlaylistActive] = useState<boolean>(false)
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -30,7 +48,7 @@ export default function InputSearch({ data, deckId }: InputSearchProps) {
     }
 
     useEffect(()=>{
-        updateActivePlaylist.mutate({state:playlistActive,deck:deckId})
+        dispatch(updateActivePlaylist({deck:deckId,playlistActive}))
     },[playlistActive])
 
     return (

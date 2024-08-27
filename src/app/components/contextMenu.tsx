@@ -2,26 +2,26 @@
 import * as ContextMenu from '@radix-ui/react-context-menu';
 import { PlayIcon,TrashIcon } from '@radix-ui/react-icons';
 import '../styles/contextMenu.css';
-import { useMutations } from '../hooks/mutations';
+import { MixTable } from '../types';
+import { useDispatch, useSelector } from 'react-redux';
+import { playAfter ,removeFromPlaylist} from '../store/playerSlice';
 
 
-interface VideoObj {
-    id: string
-    title: string
-    image: string
-}
+export type DeckId = 'deckA' | 'deckB'; 
 
-export default function PlaylistMenu({children,index,data,deck}:{children:any,index:number,data:VideoObj,deck:string}) {  
-    const { playAfter,removeFromPlaylist } = useMutations()
+export default function PlaylistMenu({children,index,data,deckId}:{children:React.ReactNode,index:number,data:any,deckId:DeckId}) {  
+
+    const dispatch = useDispatch()
+    const playlist = useSelector((state:MixTable) => state.player[deckId].playlist)
+    
     
     const handlePlayNext = () => {
-         playAfter.mutate({videoId:data.id,deck:deck})
+         dispatch(playAfter({deck:deckId,playlist:playlist,videoId:data.id}))
     }
 
     const handleRm = () => {
-        removeFromPlaylist.mutate({videoId:data.id,deck:deck})
+        dispatch(removeFromPlaylist({deck:deckId,videoId:data.id}))
     }
-
 
     return (
         <ContextMenu.Root>

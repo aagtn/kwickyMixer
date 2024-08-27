@@ -1,26 +1,21 @@
 import '../styles/sliders.css';
 import * as Slider from '@radix-ui/react-slider';
 import Mixer from '../utils/mixer';
-import { useMutations } from '../hooks/mutations';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { MixTable } from '../types';
+import { updateCrossFader, updatePlayerState, updateTransitionInProcess, updateVolume } from '../store/playerSlice';
 
-interface CrossFader {
-    position: number;
-    autoMixStartAt: number;
-    autoMixDuration: number;
-    transitionInProcess: boolean;
-}
 
-interface HorizontalSliderProps {
-    crossfader: CrossFader;
-    deckA?: string;
-    deckB?: string;
-}
+export default function HorizontalSlider() {
 
-export default function HorizontalSlider({ crossfader, deckA, deckB }: HorizontalSliderProps) {
-
-    const { updateVolume, updateCrossFader, updatePlayerState, updateTransitionInProcess } = useMutations();
     
+    const transitionInProcess = useSelector((state:MixTable)=> state.player.mixer.transitionInProcess)
+    const position = useSelector((state:MixTable)=> state.player.mixer.position)
+    const autoMixDuration = useSelector((state:MixTable)=> state.player.mixer.autoMixDuration)
+    const deckAplayState = useSelector((state:MixTable)=> state.player.deckA.playState)
+    const deckBplayState = useSelector((state:MixTable)=> state.player.deckB.playState)
+    const dispatch = useDispatch()
 
     function startTransition(start: number, end: number, durationInSeconds: number) {
         let startT = start;
@@ -38,7 +33,7 @@ export default function HorizontalSlider({ crossfader, deckA, deckB }: Horizonta
 
             if (reachedEnd) {
                 setVolume([endT]);
-                updateTransitionInProcess.mutate({ newValue: false });
+                dispatch(updateTransitionInProcess(false))
             } else {
                 current += stepSize;
                 setTimeout(update, interval);
@@ -51,48 +46,49 @@ export default function HorizontalSlider({ crossfader, deckA, deckB }: Horizonta
 
 
     useEffect(() => {
-        if (crossfader.transitionInProcess) {
-            if (crossfader.position < 0) {
-                startTransition(crossfader.position, 50, crossfader.autoMixDuration)
-                if (deckB === "paused") {
-                    updatePlayerState.mutate({ state: 'playing', deck: "deckB" })
+        if (transitionInProcess) {
+            if (position < 0) {
+                startTransition(position, 50, autoMixDuration)
+                
+                if (deckBplayState === "paused") {
+                    dispatch(updatePlayerState({deck:"deckB",playState:"playing"}))
                 }
 
-                if (deckB === "playing") {
-                    updatePlayerState.mutate({ state: 'resume', deck: "deckB" })
+                if (deckBplayState === "playing") {
+                    dispatch(updatePlayerState({deck:"deckB",playState:"resume"}))
                 }
             }
-            if (crossfader.position > 0) {
-                startTransition(crossfader.position, -50, crossfader.autoMixDuration)
-                if (deckA === "paused") {
-                    updatePlayerState.mutate({ state: 'playing', deck: "deckA" })
+            if (position > 0) {
+                startTransition(position, -50, autoMixDuration)
+                
+                if (deckAplayState === "paused") {
+                    dispatch(updatePlayerState({deck:"deckA",playState:"playing"}))
                 }
 
-                if (deckA === "playing") {
-                    updatePlayerState.mutate({ state: 'resume', deck: "deckA" })
+                if (deckAplayState === "playing") {
+                    dispatch(updatePlayerState({deck:"deckA",playState:"resume"}))
                 }
             }
         }
-    }, [crossfader.transitionInProcess]);
+    }, [transitionInProcess]);
 
 
     const setVolume = (value: number[]) => {
         const crossfaderVal = value[0];
 
-        updateCrossFader.mutate(crossfaderVal);
+        dispatch(updateCrossFader(crossfaderVal))
 
-        const dataVolA = { vol: Mixer(crossfaderVal).volumeA, deckId: 'deckA' };
-        updateVolume.mutate(dataVolA);
+        dispatch(updateVolume({deck:"deckA",volume:Mixer(crossfaderVal).volumeA}))
 
-        const dataVolB = { vol: Mixer(crossfaderVal).volumeB, deckId: 'deckB' };
-        updateVolume.mutate(dataVolB);
+        dispatch(updateVolume({deck:"deckB",volume:Mixer(crossfaderVal).volumeB}))
+
     };
 
     return (
         <div className='w-[100%] flex h-[70%] items-center justify-center'>
             <Slider.Root
                 orientation="horizontal"
-                value={[crossfader.position]}
+                value={[position]}
                 max={50}
                 min={-50}
                 step={1}

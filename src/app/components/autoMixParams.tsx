@@ -1,25 +1,19 @@
 import '../styles/AutoMix.css'
 import * as Popover from '@radix-ui/react-popover';
 import { MixerHorizontalIcon, Cross2Icon } from '@radix-ui/react-icons';
-import { useMutations } from '../hooks/mutations';
-
-interface CrossFader {
-  position:number;
-  autoMixStartAt:number;
-  autoMixDuration:number;
-}
-
-interface CrossFaderProps{
-  data:CrossFader;
-}
-
-export default function AutoMixParams({data}:CrossFaderProps){
-  const {updateAutoMixDuration} = useMutations()
+import { updateAutoMixDuration } from '../store/playerSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { MixTable } from '../types';
 
 
+export default function AutoMixParams(){
+  
+  const dispatch = useDispatch()
+  const autoMixDuration = useSelector((state:MixTable)=> state.player.mixer.autoMixDuration)
+ 
   const handleUpdateDuration = (event:React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(event.target.value);
-    updateAutoMixDuration.mutate({newValue});
+    const newValue = parseFloat(event.target.value);  
+    dispatch(updateAutoMixDuration(newValue))
   } 
 
     return(
@@ -39,7 +33,7 @@ export default function AutoMixParams({data}:CrossFaderProps){
                 <label className="Label" htmlFor="width">
                   Duration
                 </label>
-                <input className="Input-prop" id="width" onChange={handleUpdateDuration} defaultValue={data.autoMixDuration} type='number' min={0} max={30}/>
+                <input className="Input-prop" id="width" onChange={handleUpdateDuration} defaultValue={autoMixDuration} type='number' min={0} max={30}/>
               </fieldset>
             </div>
             <Popover.Close className="PopoverClose" aria-label="Close">

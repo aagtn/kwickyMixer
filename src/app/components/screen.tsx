@@ -1,39 +1,21 @@
 'use client'
-import { useEffect } from "react";
+import { DeckId, MixTable } from "../types";
 import YoutubePlayer from "./youtubePlayer"
 import Image from "next/image";
-
-interface VideoObj {
-    id: string;
-    title: string;
-    image: string;
-}
+import { useSelector } from "react-redux";
 
 
-interface ScreenPropsData{
-    selectedVideo : VideoObj;
-    playState : string;
-    volume:number;
-    loop:boolean;
-    deck:string;
-    seekTo:number;    
-    playlist:VideoObj[];
-    
-}
-
-interface ScreenProps{
-    data : ScreenPropsData;
-}
-
-export default function Screen({data}:ScreenProps){
+export default function Screen({deckId}:DeckId){
+    const playState = useSelector((state:MixTable) => state.player[deckId].playState)
+    const selectedVideoImg = useSelector((state:MixTable) => state.player[deckId].selectedVideo?.image)
 
     return(
         <div className="w-full bg-black h-[65%] mt-2 rounded-lg overflow-hidden pointer-events-none screen-morph">
            
-            {data.playState === "paused"
-             && <Image src={ data.selectedVideo.image } width={400} height={350} alt={"cover"} className="object-cover w-full h-full"/>}
+            {playState === "paused"
+             && <Image src={ selectedVideoImg || "" } width={400} height={350} alt={"cover"} className="object-cover w-full h-full"/>}
            
-           <YoutubePlayer data={data} />
+           <YoutubePlayer deckId={deckId} />
         </div>
     )
 }

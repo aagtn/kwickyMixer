@@ -1,16 +1,19 @@
 import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from "react";
-import { useMutations } from '../hooks/mutations';
+import { useDispatch } from 'react-redux';
+import { updateAutoMixState } from '../store/playerSlice';
+
 export default function AutoMixBtn() {
     const [autoTransition, setAutoTransition] = useState<boolean>(true)
-    const {updateAutoMixState} = useMutations()
     
+    const dispatch = useDispatch()
+
     const handleAutoTrans = () => {
         setAutoTransition((prev)=> !prev)
     }
 
     useEffect(()=>{
-        updateAutoMixState.mutate({newValue:autoTransition})
+        dispatch(updateAutoMixState(autoTransition))
     },[autoTransition])
 
     return (

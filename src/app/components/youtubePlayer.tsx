@@ -1,29 +1,9 @@
 'use client';
-import { use, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
-import { useMutations } from '../hooks/mutations';
-import { deckA } from '../data/decksParams';
-
-interface VideoObj {
-  id: string;
-  title: string;
-  image: string;
-}
-
-interface YoutubePlayerPropsData {
-  selectedVideo: VideoObj;
-  playState: string;
-  volume: number;
-  loop: boolean;
-  deck: string;
-  seekTo: number;
-  playlist: VideoObj[]
-}
-
-interface YoutubePlayerProps {
-  data?: YoutubePlayerPropsData;
-  deckId?: string;
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCurrentTime,updateDuration,playNextTrack } from '../store/playerSlice';
+import { DeckId, MixTable } from '../types';
 
 
 const opts: YouTubeProps['opts'] = {
@@ -39,62 +19,66 @@ const opts: YouTubeProps['opts'] = {
   },
 }
 
-export default function YoutubePlayer({ data }: YoutubePlayerProps) {
+
+
+export default function YoutubePlayer({ deckId }: DeckId) {
+
   const playerRef = useRef<YouTube>(null);
-  const { updateCurrentTime, updateDuration, playNextTrack } = useMutations();
-
-
-
+  
+  const dispatch = useDispatch();
+  const selectedVideo = useSelector((state:MixTable) => state.player[deckId].selectedVideo)
+  const playState = useSelector((state:MixTable) => state.player[deckId].playState)
+  const loop = useSelector((state:MixTable) => state.player[deckId].loop)
+  const volume = useSelector((state:MixTable) => state.player[deckId].volume)
+  const seekTo = useSelector((state:MixTable) => state.player[deckId].seekTo)
+  const playlist = useSelector((state:MixTable) => state.player[deckId].playlist)
+  
+  
+  
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
 
-    if (!data || !player) return;
+    if (!player) return;
 
-    if (data.playState === 'playing') {
+    if (playState === 'playing') {
       player.playVideo();
-    } else if (data.playState === 'paused') {
+    } else if (playState === 'paused') {
       player.pauseVideo();
-    } else if (data.playState === 'resume') {
+    } else if (playState === 'resume') {
       player.seekTo(0);
     }
 
-    if (data.loop) {
+    if (loop) {
       player.setLoop(true)
     } else {
       player.setLoop(false)
     }
 
-  }, [data?.playState, data?.loop]);
+  }, [playState, loop]);
 
   useEffect(() => {
-    if (!data) return
     const player = playerRef.current?.internalPlayer
-    if (data.selectedVideo) {
-      player.cuePlaylist(data.selectedVideo.id)
+    if (selectedVideo) {
+      player.cuePlaylist(selectedVideo.id)
     }
-  }, [data?.selectedVideo])
+  }, [selectedVideo])
 
   useEffect(() => {
-    if (!data) return
     const player = playerRef.current?.internalPlayer;
-    if (player && data.volume !== undefined) {
-      player.setVolume(data.volume);
+    if (player && volume !== undefined) {
+      player.setVolume(volume);
     }
-  }, [data?.volume]);
+  }, [volume]);
 
   useEffect(() => {
-
-    if (!data) return
-
     const player = playerRef.current?.internalPlayer;
-    if (data.seekTo > 0) {
-      player.seekTo(data?.seekTo);
-      if (data.seekTo > 0 && data.playState === 'paused') {
+    if (seekTo > 0) {
+      player.seekTo(seekTo);
+      if (seekTo > 0 && playState === 'paused') {
         player.pauseVideo()
       }
     }
-
-  }, [data?.seekTo])
+  }, [seekTo])
 
 
 
@@ -102,20 +86,19 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
 
 
     const player = event.target;
-    if (data?.volume !== undefined) {
-      player.setVolume(data.volume);
+    if (volume !== undefined) {
+      player.setVolume(volume);
     }
   };
 
 
   const updateProgress = async () => {
-    if (!data) return
-   
+    
     const player = playerRef.current?.internalPlayer
     const playerState = await player.getPlayerState()
     
-    const duration = player.getDuration()
-    updateDuration.mutate({ currentTime: duration, deck: data.deck })
+    const duration = await player.getDuration()
+    dispatch(updateDuration({ deck:deckId, trackDuration: duration }));
     if(playerState === 1){
     let lastUpdateTime = 0;
 
@@ -123,8 +106,8 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
       const playerCurrentTime = await player.getCurrentTime()
       const now = Date.now();
       if (now - lastUpdateTime > 1000) {
-        const currentTime = Math.round(playerCurrentTime)
-        updateCurrentTime.mutate({ currentTime, deck: data.deck });
+        const currentTime = Math.round(playerCurrentTime)        
+        dispatch(updateCurrentTime({ deck:deckId, currentTime: currentTime }));
         lastUpdateTime = now;
       }
       requestAnimationFrame(updateTime);
@@ -135,10 +118,9 @@ export default function YoutubePlayer({ data }: YoutubePlayerProps) {
   }
 
   const handleEnd = () => {
-    if (!data) return
-    if (data.playlist && data.playlist.length > 0) {
-      playNextTrack.mutate(data.deck)
-
+    
+    if (playlist && playlist.length > 0) {
+      dispatch(playNextTrack({deck:deckId}))
     } else {
       console.error('Playlist is empty or does not exist');
     }

@@ -1,25 +1,7 @@
 import VerticalSlider from "./sliderV"
 
-interface VideoObj {
-    id: string;
-    title: string;
-}
 
-interface DataObj {
-    searchInput: string;
-    videos: VideoObj[];
-    volume: number;
-    playState: string;
-    selectedVideo: VideoObj;
-}
-
-interface DataDeck {
-    deckA?: DataObj;
-    deckB?: DataObj;
-}
-
-
-export default function ScreenMixer({deckA,deckB}:DataDeck){
+export default function ScreenMixer({deckA,deckB}:any){
 
     return(
         <div className='w-full h-full bg-black flex relative justify-center'>

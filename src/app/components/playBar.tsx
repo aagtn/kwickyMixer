@@ -1,73 +1,64 @@
 import * as Slider from '@radix-ui/react-slider';
 import { useEffect, useState } from 'react';
 import { GetTimeless } from '../utils/timeFunc';
-import { useMutations } from '../hooks/mutations';
+import { useDispatch } from 'react-redux';
+import { updateSeekTo,updateTransitionInProcess } from '../store/playerSlice';
+import { useSelector } from 'react-redux';
+import { MixTable,DeckId } from '../types';
 
-interface CrossFader {
-    position: number;
-    autoMixStartAt: number;
-    autoMixDuration: number;
-    transitionInProcess: boolean;
-    autoMix: boolean;
-}
 
-interface ProgressBarParams {
-    time: number;
-    duration: number;
-    deck: string;
-    seekTo: number;
-    crossFader?: CrossFader;
-    volume: number,
-    loop: boolean
-}
-
-interface ProgressBarProps {
-    data: ProgressBarParams;
-}
-
-export default function ProgressBar({ data }: ProgressBarProps) {
+export default function ProgressBar({deckId}:DeckId) {
     const [progress, setProgress] = useState<number>(0);
     const [remainingTime, setRemainingTime] = useState<string>();
     const [hoverPercent, setHoverPercent] = useState<number | null>(null);
     const [hoverTime, setHoverTime] = useState<string | null>(null);
     const [fadeWidth, setFadeWidth] = useState<number | undefined>(0)
-    const { updateSeekTo, updateTransitionInProcess } = useMutations()
     
+    
+    const dispatch = useDispatch();
+    const playerDuration = useSelector((state: MixTable) => state.player[deckId].trackDuration);
+    const playerTime = useSelector((state: MixTable) => state.player[deckId].currentTime);
+    
+    const autoMix = useSelector((state:MixTable)=> state.player.mixer.autoMix)
+    const autoMixDuration = useSelector((state:MixTable)=> state.player.mixer.autoMixDuration)
+    const transitionInProcess = useSelector((state:MixTable)=> state.player.mixer.transitionInProcess)
 
     useEffect(() => {
-
-        if (data.duration > 0) {
-            const progressPercent = (data.time / data.duration) * 100;
-            const timeR = data.duration - data.time;
+        if (playerDuration > 0) {
+            const progressPercent = (playerTime / playerDuration) * 100;
+            const timeR = playerDuration - playerTime;
             const lessTime = GetTimeless(timeR);
             setRemainingTime(lessTime);
             setProgress(progressPercent);
 
-            if (data.crossFader?.autoMix
-                && data.crossFader?.autoMixDuration
-                && data.time > data.duration - data.crossFader.autoMixDuration
-                && data.crossFader.transitionInProcess === false
-                &&data.crossFader.autoMix) {
-                updateTransitionInProcess.mutate({ newValue: true })
+            if (autoMix
+                && autoMixDuration
+                && playerTime > playerDuration - autoMixDuration
+                && transitionInProcess === false
+                ){
+                    dispatch(updateTransitionInProcess(true))
             }
         }
+    }, [playerDuration,playerTime]);
 
-    }, [data.time, data.duration]);
 
-
-    useEffect(() => {
-        if (data.crossFader && data.duration > 0) {
-            const wPercent = (data.crossFader.autoMixDuration / data.duration) * 100;
+    useEffect(() => { 
+        if (playerDuration > 0) {
+            const wPercent = (autoMixDuration / playerDuration) * 100;            
             setFadeWidth(wPercent);
         } else {
             setFadeWidth(undefined);
         }
-    }, [data.crossFader, data.duration]);
+    }, [playerDuration,autoMixDuration]);
+
+    useEffect(()=>{
+        
+        
+    },[autoMix])
 
     const setPlayProgress = (value: number[]) => {
-        updateSeekTo.mutate({ currentTime: value[0], deck: data.deck, trackDuration: data.duration })
-        setProgress(value[0]);
-
+       dispatch(updateSeekTo({currentTime:value[0],deck:deckId,trackDuration:playerDuration})) 
+       setProgress(value[0]);
     };
 
     const handleMouseMove = (event: React.MouseEvent) => {
@@ -76,7 +67,7 @@ export default function ProgressBar({ data }: ProgressBarProps) {
         const hoverPercentValue = (offsetX / sliderWidth) * 100;
         setHoverPercent(hoverPercentValue);
 
-        const hoverTimeInSec = (hoverPercentValue / 100) * data.duration;
+        const hoverTimeInSec = (hoverPercentValue / 100) * playerDuration;
         const formattedHoverTime = GetTimeless(hoverTimeInSec);
         setHoverTime(formattedHoverTime);
     };
@@ -87,7 +78,7 @@ export default function ProgressBar({ data }: ProgressBarProps) {
     };
 
     return (
-        <div className='w-[100%] flex h-[20px] mt-6 items-center '>
+        <div className='w-[100%] flex h-[20px] mt-6 items-center transition-all'>
             <Slider.Root
                 orientation="horizontal"
                 value={[progress]}
@@ -105,7 +96,7 @@ export default function ProgressBar({ data }: ProgressBarProps) {
                     cursor: 'pointer',
                     borderRadius: "8px",
                 }}
-                className='btn-morph play-bar'
+                className='btn-morph play-bar transition-all'
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
             >
@@ -120,6 +111,7 @@ export default function ProgressBar({ data }: ProgressBarProps) {
                         height: '80%',
                         borderRadius: '9px',
                     }}
+                    className='transition-all'
                 >
                     {/* Progress Bar */}
                     <Slider.Range
@@ -147,6 +139,7 @@ export default function ProgressBar({ data }: ProgressBarProps) {
                     )}
 
                     {/* Fade Out Bar */}
+                    {autoMix && 
                     <div style={{
                         position: "absolute",
                         width: fadeWidth + '%',
@@ -158,8 +151,10 @@ export default function ProgressBar({ data }: ProgressBarProps) {
                         pointerEvents: "none",
                     }}>
                     </div>
-
+                    }
+                    
                     {/* Fade In Bar */}
+                    {autoMix && 
                     <div style={{
                         position: "absolute",
                         width: fadeWidth + '%',
@@ -171,6 +166,8 @@ export default function ProgressBar({ data }: ProgressBarProps) {
                         pointerEvents: "none",
                     }}>
                     </div>
+                    }
+                    
 
                 </Slider.Track>
 
