@@ -2,7 +2,7 @@
 export interface PlaylistItem {
     id: string;
     title: string;
-    image: string;
+    image?: string;
 }
 
 export interface DeckState {

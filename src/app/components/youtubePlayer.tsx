@@ -24,7 +24,7 @@ const opts: YouTubeProps['opts'] = {
 export default function YoutubePlayer({ deckId }: DeckId) {
 
   const playerRef = useRef<YouTube>(null);
-  
+
   const dispatch = useDispatch();
   const selectedVideo = useSelector((state:MixTable) => state.player[deckId].selectedVideo)
   const playState = useSelector((state:MixTable) => state.player[deckId].playState)
@@ -32,7 +32,6 @@ export default function YoutubePlayer({ deckId }: DeckId) {
   const volume = useSelector((state:MixTable) => state.player[deckId].volume)
   const seekTo = useSelector((state:MixTable) => state.player[deckId].seekTo)
   const playlist = useSelector((state:MixTable) => state.player[deckId].playlist)
-  
   
   
   useEffect(() => {

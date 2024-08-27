@@ -65,6 +65,10 @@ export const playerSlice = createSlice({
             const { deck, volume } = action.payload;
             state[deck].volume = volume;
         },
+        updateVideos: (state: WritableDraft<RootState>, action: PayloadAction<{ deck: DeckKey; videos: PlaylistItem[] }>) => {
+            const { deck, videos } = action.payload;
+            state[deck].videos = videos;
+        },
         updateCrossFader: (state: WritableDraft<RootState>, action: PayloadAction<number>) => {
             state.mixer.position = action.payload;
         },
@@ -158,6 +162,7 @@ export const {
     updateVolume,
     updateCrossFader,
     updateSeekTo,
+    updateVideos,
     addToPlayList,
     removeFromPlaylist,
     updateActivePlaylist,

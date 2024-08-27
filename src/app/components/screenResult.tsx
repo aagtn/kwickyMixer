@@ -82,7 +82,7 @@ export default function ScreenResult({deckId}:DeckId) {
                                     <PlaylistMenu index={index} data={video} deckId={deckId}>
                                         <div className={`Tag-playlist flex cursor-pointer py-2 text-white items-center`}>
                                             <div className='w-[40px] min-w-[40px] h-[30px] flex items-center object-cover bg-red-500 overflow-hidden rounded mr-3 bg-slate-900'>
-                                                <Image src={video.image} width={60} height={60} alt='cover' className='object-cover' />
+                                                <Image src={video.image || ""} width={60} height={60} alt='cover' className='object-cover' />
                                             </div>
                                             <div className='pr-8 hover:text-blue-500' data-key={video.id} data-img={video.image} data-title={video.title}>{video.title}</div>
                                         </div>
@@ -99,7 +99,7 @@ export default function ScreenResult({deckId}:DeckId) {
                             videos.map((video) => (
                                 <div className={`Tag flex text-white items-center ${ selectedVideo?.id === video.id ? "selected" : ""}`} key={video.id}>
                                     <div className='w-[40px] min-w-[40px] h-[30px] flex items-center object-cover bg-red-500 overflow-hidden rounded mr-3 bg-slate-900'>
-                                        <Image src={video.image} width={60} height={60} alt='cover' className='object-cover' />
+                                        <Image src={video.image || ""} width={60} height={60} alt='cover' className='object-cover' />
                                     </div>
                                     <div className='pr-8 cursor-pointer' onClick={handleSelectedVideo} data-key={video.id} data-title={video.title} data-image={video.image}>{video.title}</div>
                                     {isInPlaylist(video) < 0 ?

@@ -2,15 +2,14 @@ import '../styles/searchInput.css';
 import { Button } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import Image from 'next/image';
-import { useMutation,useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import fetchYoutube from '../utils/fetchYoutubeApi';
 import { useDispatch,useSelector } from 'react-redux';
 import { DeckId,MixTable } from '../types';
-import { updateActivePlaylist } from '../store/playerSlice';
+import { updateActivePlaylist, updateVideos } from '../store/playerSlice';
 
 export default function InputSearch({deckId}: DeckId) {
-    const queryClient = useQueryClient()
-    
+     
     const dispatch = useDispatch()
     const inputData = useSelector((state:MixTable) => state.player[deckId].searchInput)
     
@@ -20,13 +19,7 @@ export default function InputSearch({deckId}: DeckId) {
             return response;
         },
         onSuccess: (data, variables) => {
-            queryClient.setQueryData([variables.deck], (oldData: any) => {
-                return {
-                    ...oldData,
-                    searchInput: variables.newSearchInput,
-                    videos: data.videos
-                };
-            });
+            dispatch(updateVideos({deck:deckId,videos:data.videos}))
         }
     });
     

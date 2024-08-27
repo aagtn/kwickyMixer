@@ -26,7 +26,6 @@ export default function Home() {
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
         <App />
-        <ReactQueryDevtools initialIsOpen={true} />
       </Provider>
     </QueryClientProvider>
   );
