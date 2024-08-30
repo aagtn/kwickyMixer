@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCurrentTime,updateDuration,playNextTrack } from '../store/playerSlice';
+import { updateCurrentTime, updateDuration, playNextTrack,loadingVideo } from '../store/playerSlice';
 import { DeckId, MixTable } from '../types';
 
 
@@ -25,20 +25,24 @@ export default function YoutubePlayer({ deckId }: DeckId) {
 
   const playerRef = useRef<YouTube>(null);
 
+
   const dispatch = useDispatch();
-  const selectedVideo = useSelector((state:MixTable) => state.player[deckId].selectedVideo)
-  const playState = useSelector((state:MixTable) => state.player[deckId].playState)
-  const loop = useSelector((state:MixTable) => state.player[deckId].loop)
-  const volume = useSelector((state:MixTable) => state.player[deckId].volume)
-  const seekTo = useSelector((state:MixTable) => state.player[deckId].seekTo)
-  const playlist = useSelector((state:MixTable) => state.player[deckId].playlist)
+
+  const [playerReady, setPlayerReady] = useState(false)
+  const selectedVideo = useSelector((state: MixTable) => state.player[deckId].selectedVideo)
+  const playState = useSelector((state: MixTable) => state.player[deckId].playState)
+  const loop = useSelector((state: MixTable) => state.player[deckId].loop)
+  const volume = useSelector((state: MixTable) => state.player[deckId].volume)
+  const seekTo = useSelector((state: MixTable) => state.player[deckId].seekTo)
+  const playlist = useSelector((state: MixTable) => state.player[deckId].playlist)
   
-  
+
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
 
     if (!player) return;
-
+    console.log(playState);
+    
     if (playState === 'playing') {
       player.playVideo();
     } else if (playState === 'paused') {
@@ -57,7 +61,7 @@ export default function YoutubePlayer({ deckId }: DeckId) {
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer
-    if (selectedVideo) {
+    if (selectedVideo && playerReady) {
       player.cuePlaylist(selectedVideo.id)
     }
   }, [selectedVideo])
@@ -80,46 +84,61 @@ export default function YoutubePlayer({ deckId }: DeckId) {
   }, [seekTo])
 
 
-
   const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
-
-
     const player = event.target;
+    setPlayerReady(true)
     if (volume !== undefined) {
       player.setVolume(volume);
     }
+    if (selectedVideo) {
+      player.cuePlaylist(selectedVideo.id)
+    }
+
   };
 
 
   const updateProgress = async () => {
-    
-    const player = playerRef.current?.internalPlayer
-    const playerState = await player.getPlayerState()
-    
-    const duration = await player.getDuration()
-    dispatch(updateDuration({ deck:deckId, trackDuration: duration }));
-    if(playerState === 1){
-    let lastUpdateTime = 0;
 
-    const updateTime = async () => {
-      const playerCurrentTime = await player.getCurrentTime()
-      const now = Date.now();
-      if (now - lastUpdateTime > 1000) {
-        const currentTime = Math.round(playerCurrentTime)        
-        dispatch(updateCurrentTime({ deck:deckId, currentTime: currentTime }));
-        lastUpdateTime = now;
-      }
-      requestAnimationFrame(updateTime);
-    };
-    updateTime()
+    const player = playerRef.current?.internalPlayer
+    
+    const playerState = await player.getPlayerState()
+    const duration = await player.getDuration()
+
+    if(playerState === -1){
+      dispatch(loadingVideo({deck:deckId,isLoading:true}))
     }
-  
+    
+    if(playerState === 5){
+      dispatch(loadingVideo({deck:deckId,isLoading:false}))
+    }
+    
+    dispatch(updateDuration({ deck: deckId, trackDuration: duration }));
+
+    if (playerState === 1) {
+      
+      dispatch(loadingVideo({deck:deckId,isLoading:false}))
+
+      let lastUpdateTime = 0;
+      const updateTime = async () => {
+        const playerCurrentTime = await player.getCurrentTime()
+        const now = Date.now();
+        if (now - lastUpdateTime > 1000) {
+          const currentTime = Math.round(playerCurrentTime)
+          dispatch(updateCurrentTime({ deck: deckId, currentTime: currentTime }));
+          lastUpdateTime = now;
+        }
+        requestAnimationFrame(updateTime);
+      };
+      
+      updateTime()
+    }
+
   }
 
   const handleEnd = () => {
-    
+
     if (playlist && playlist.length > 0) {
-      dispatch(playNextTrack({deck:deckId}))
+      dispatch(playNextTrack({ deck: deckId }))
     } else {
       console.error('Playlist is empty or does not exist');
     }
@@ -127,6 +146,7 @@ export default function YoutubePlayer({ deckId }: DeckId) {
 
 
   return (
+
     <YouTube
       onReady={handlePlayerReady}
       onStateChange={updateProgress}
@@ -135,5 +155,6 @@ export default function YoutubePlayer({ deckId }: DeckId) {
       ref={playerRef}
       className="h-[100%]"
     />
+
   );
 }

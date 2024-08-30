@@ -17,6 +17,7 @@ export interface DeckState {
     selectedVideo: PlaylistItem | null;
     searchInput: string;
     videos: PlaylistItem[];
+    isLoading:boolean;
 }
 
 export interface RootState{

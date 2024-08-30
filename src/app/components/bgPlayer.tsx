@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import { useDispatch, useSelector } from 'react-redux';
 import Image from 'next/image';
@@ -25,7 +25,7 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
   const playerRef = useRef<YouTube>(null);
 
   const dispatch = useDispatch()
-
+  const [playerReady, setPlayerReady] = useState(false)
   const playState = useSelector((state: MixTable) => state.player[deckId].playState)
   const loop = useSelector((state: MixTable) => state.player[deckId].loop)
   const selectedVideo = useSelector((state: MixTable) => state.player[deckId].selectedVideo)
@@ -35,7 +35,8 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
 
 
   useEffect(() => {
-
+    
+    
     if (!player) return;
 
     if (playState === 'playing') {
@@ -57,7 +58,7 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
   useEffect(() => {
     const player = playerRef.current?.internalPlayer
     if (!player) return
-    if (selectedVideo) {
+    if (selectedVideo && playerReady) {
       player.cuePlaylist(selectedVideo.id)
     }
   }, [selectedVideo])
@@ -86,7 +87,10 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
     if (volume !== undefined) {
       player.setVolume(0);
     }
-
+    if(selectedVideo){
+      player.cuePlaylist(selectedVideo.id)
+      setPlayerReady(true)
+    }
   };
 
   return (

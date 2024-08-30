@@ -4,23 +4,26 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { DeckId, MixTable } from '../types';
 import { useDispatch, useSelector } from 'react-redux';
-import { updatePlayerState,updateLoopState, playNextTrack, playPreviousTrack } from '../store/playerSlice';
+import { updatePlayerState, updateLoopState, playNextTrack, playPreviousTrack } from '../store/playerSlice';
 
 export default function Controls({ deckId }: DeckId) {
 
-    const [next,setNext] = useState(false)
-    const [prev,setPrev] = useState(false)
-    const playState = useSelector((state:MixTable) => state.player[deckId].playState)
-    const loop = useSelector((state:MixTable) => state.player[deckId].loop)
+    const [next, setNext] = useState<boolean>(false)
+    const [prev, setPrev] = useState<boolean>(false)
+    const [playerState, setPlayerState] = useState<string>("")
+    const playState = useSelector((state: MixTable) => state.player[deckId].playState)
+    const loop = useSelector((state: MixTable) => state.player[deckId].loop)
+    const [prevPlayState, setPrevPlayState] = useState("")
+
     const dispatch = useDispatch()
 
     const handlePlayingState = (event: React.MouseEvent<HTMLDivElement>) => {
         const dataState = event.currentTarget.getAttribute('data-state');
         if (dataState) {
-            dispatch(updatePlayerState({deck:deckId,playState:dataState}))
+            dispatch(updatePlayerState({ deck: deckId, playState: dataState }))
             if (dataState === 'resume') {
                 setTimeout(() => {
-                    dispatch(updatePlayerState({deck:deckId,playState:"playing"}))
+                    dispatch(updatePlayerState({ deck: deckId, playState: "playing" }))
                 }, 1000)
             }
         }
@@ -30,26 +33,36 @@ export default function Controls({ deckId }: DeckId) {
     const handleSetLoop = (event: React.MouseEvent<HTMLDivElement>) => {
         const dataState = event.currentTarget.getAttribute('data-state');
         if (dataState) {
-            dispatch(updateLoopState({deck:deckId}))            
+            dispatch(updateLoopState({ deck: deckId }))
         }
     };
 
     const handleNextTrack = (event: React.MouseEvent<HTMLDivElement>) => {
         setNext(true)
-        dispatch(playNextTrack({deck:deckId}))
+        dispatch(playNextTrack({ deck: deckId }))
+        setPrevPlayState(playState)
+        dispatch(updatePlayerState({ deck: deckId, playState: "paused" }))       
+  
     }
 
     const handlePreviousTrack = (event: React.MouseEvent<HTMLDivElement>) => {
         setPrev(true)
-        dispatch(playPreviousTrack({deck:deckId}))
+        dispatch(playPreviousTrack({ deck: deckId }))
+        setPrevPlayState(playState)
+        dispatch(updatePlayerState({ deck: deckId, playState: "paused" }))
     }
 
-    useEffect(()=>{
-        setTimeout(()=>{
+    useEffect(() => {
+        setTimeout(() => {
             setNext(false)
             setPrev(false)
-        },200)
-    },[next,prev])
+        }, 200)
+    }, [next, prev])
+
+
+    useEffect(() => {
+        setPlayerState(playState)
+    }, [playState])
 
     return (
         <div className={`w-full mt-8 flex `}>
@@ -77,11 +90,11 @@ export default function Controls({ deckId }: DeckId) {
                     data-state={"resume"}
                     onClick={handlePlayingState}
                 >
-                    <ResumeIcon className=' w-[20px] h-[20px]' color={playState === "resume" ? '#9db1ff' : "rgba(255,255,255,.6"} />
+                    <ResumeIcon className=' w-[20px] h-[20px]' color={playerState === "resume" ? '#9db1ff' : "rgba(255,255,255,.6"} />
                 </div>
                 <div className='flex items-center justify-center mt-4'>
-                    <div className={`absolute border border-black rounded-full z-20 ${playState === "resume" ? ' w-[2px] h-[2px] bg-green-600 border-0 animate-ping' : "w-[4px] h-[4px] bg-black"}`}></div>
-                    <div className={`w-[5px] h-[5px] rounded-full z-10 ${playState === "resume" ? 'bg-green-600 blur-[2px] animate-ping' : ""}`}></div>
+                    <div className={`absolute border border-black rounded-full z-20 ${playerState === "resume" ? ' w-[2px] h-[2px] bg-green-600 border-0 animate-ping' : "w-[4px] h-[4px] bg-black"}`}></div>
+                    <div className={`w-[5px] h-[5px] rounded-full z-10 ${playerState === "resume" ? 'bg-green-600 blur-[2px] animate-ping' : ""}`}></div>
                     <div className='absolute w-[4px] h-[4px] bg-black rounded-full'></div>
                 </div>
             </div>
@@ -91,18 +104,18 @@ export default function Controls({ deckId }: DeckId) {
             <div className='flex flex-col justify-center items-center mr-6'>
                 <div
                     className='btn-morph p-4 cursor-pointer'
-                    data-state={playState === "paused" ? "playing" : "paused"}
+                    data-state={playerState === "paused" ? "playing" : "paused"}
                     onClick={handlePlayingState}
                 >
-                    {playState === "paused" ?
+                    {playerState === "paused" ?
                         <PlayIcon className='w-[20px] h-[20px]' color='#9db1ff' />
                         :
                         <PauseIcon className='w-[20px] h-[20px]' color='rgb(202 138 4)' />
                     }
                 </div>
                 <div className='flex items-center justify-center mt-4'>
-                    <div className={` absolute  border border-black rounded-full z-20 w-[2px] h-[2px] ${playState === "paused" ? "bg-yellow-600 border-0 animate-ping" : "bg-blue-600 border-0"}`}></div>
-                    <div className={`w-[5px] h-[5px] rounded-full z-10 ${playState === "paused" ? 'bg-yellow-600 blur-[2px] animate-ping' : "bg-blue-600 blur-[2px]"}`}></div>
+                    <div className={` absolute  border border-black rounded-full z-20 w-[2px] h-[2px] ${playerState === "paused" ? "bg-yellow-600 border-0 animate-ping" : "bg-blue-600 border-0"}`}></div>
+                    <div className={`w-[5px] h-[5px] rounded-full z-10 ${playerState === "paused" ? 'bg-yellow-600 blur-[2px] animate-ping' : "bg-blue-600 blur-[2px]"}`}></div>
                     <div className='absolute w-[4px] h-[4px] bg-black rounded-full'></div>
                 </div>
             </div>
@@ -114,7 +127,7 @@ export default function Controls({ deckId }: DeckId) {
                     data-state={"resume"}
                     onClick={handleNextTrack}
                 >
-                    <TrackNextIcon className='w-[20px] h-[20px] rgba(255,255,255,.6)' color={next ? '#9db1ff' : "rgba(255,255,255,.6"}  />
+                    <TrackNextIcon className='w-[20px] h-[20px] rgba(255,255,255,.6)' color={next ? '#9db1ff' : "rgba(255,255,255,.6"} />
                 </div>
                 <div className='flex items-center justify-center mt-4'>
                     <div className={`absolute border border-black rounded-full z-20 ${next ? "w-[2px] h-[2px] bg-blue-600 border-0" : ""}`}></div>

@@ -8,8 +8,6 @@ import MixerCpnt from './mixer';
 import BgYoutubePlayer from './bgPlayer';
 import '@radix-ui/themes/styles.css';
 import { useEffect, useState } from 'react';
-import LoadingMain from './loadingMain';
-import ErrorMain from './errorMain';
 import { useSelector } from 'react-redux';
 import { MixTable } from '../types';
 
@@ -19,7 +17,7 @@ export default function App() {
     const [bgOpacityA, setBgOpacityA] = useState<number>(1); 
     const [bgOpacityB, setBgOpacityB] = useState<number>(0); 
     const crossfaderPosition = useSelector((state:MixTable) => state.player.mixer.position)
-  
+    const [fullScreen,setFullScreen] = useState<boolean>(true)
 
     useEffect(() => {
         if (crossfaderPosition) {
@@ -40,8 +38,8 @@ export default function App() {
         <Theme accentColor="indigo" appearance="dark">
           
             <div className="h-[100vh] max-h-[100vh] w-[100vw] flex">
-                <div className="flex z-10 w-full flex justify-center items-center p-8">
-                    <div className="flex w-full min-w-[1100px] max-w-[1400px] max-h-[700px] h-[80%] bg-[#101114] p-6 rounded-3xl">
+                <div className={`flex z-10 w-full flex justify-center items-center ${!fullScreen ? "p-8" :"p-2"}`}>
+                    <div className={`flex w-full h-full max-h-[900px] max-w-[1800px]  ${!fullScreen ? 'min-w-[1100px] h-[80%]':"h-[90%]"} rounded-3xl bg-[#101114] p-6 `}>
                         <div className="flex w-full rounded-xl p-4 main-bg">
                             <DeckCpnt deckId={"deckA"} />
                             <MixerCpnt />

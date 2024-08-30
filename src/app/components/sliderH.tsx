@@ -50,18 +50,19 @@ export default function HorizontalSlider() {
             if (position < 0) {
                 startTransition(position, 50, autoMixDuration)
                 
-                if (deckBplayState === "paused") {
+                if (deckBplayState === "paused" || deckBplayState === "resume") {
                     dispatch(updatePlayerState({deck:"deckB",playState:"playing"}))
                 }
 
                 if (deckBplayState === "playing") {
                     dispatch(updatePlayerState({deck:"deckB",playState:"resume"}))
                 }
+
             }
             if (position > 0) {
                 startTransition(position, -50, autoMixDuration)
                 
-                if (deckAplayState === "paused") {
+                if (deckAplayState === "paused" || deckBplayState === "resume") {
                     dispatch(updatePlayerState({deck:"deckA",playState:"playing"}))
                 }
 
@@ -88,7 +89,7 @@ export default function HorizontalSlider() {
         <div className='w-[100%] flex h-[70%] items-center justify-center'>
             <Slider.Root
                 orientation="horizontal"
-                value={[position]}
+                value={[position || -50] }
                 max={50}
                 min={-50}
                 step={1}
