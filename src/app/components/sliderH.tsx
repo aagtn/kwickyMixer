@@ -4,7 +4,7 @@ import Mixer from '../utils/mixer';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { MixTable } from '../types';
-import { updateCrossFader, updatePlayerState, updateTransitionInProcess, updateVolume } from '../store/playerSlice';
+import { updateCrossFader, updateTransitionInProcess, updateVolume } from '../store/playerSlice';
 
 
 export default function HorizontalSlider() {
@@ -12,9 +12,7 @@ export default function HorizontalSlider() {
     
     const transitionInProcess = useSelector((state:MixTable)=> state.player.mixer.transitionInProcess)
     const position = useSelector((state:MixTable)=> state.player.mixer.position)
-    const autoMixDuration = useSelector((state:MixTable)=> state.player.mixer.autoMixDuration)
-    const deckAplayState = useSelector((state:MixTable)=> state.player.deckA.playState)
-    const deckBplayState = useSelector((state:MixTable)=> state.player.deckB.playState)
+    const autoMixDuration = useSelector((state:MixTable)=> state.player.mixer.autoMixDuration) 
     const dispatch = useDispatch()
 
     function startTransition(start: number, end: number, durationInSeconds: number) {
@@ -49,26 +47,9 @@ export default function HorizontalSlider() {
         if (transitionInProcess) {
             if (position < 0) {
                 startTransition(position, 50, autoMixDuration)
-                
-                if (deckBplayState === "paused" || deckBplayState === "resume") {
-                    dispatch(updatePlayerState({deck:"deckB",playState:"playing"}))
-                }
-
-                if (deckBplayState === "playing") {
-                    dispatch(updatePlayerState({deck:"deckB",playState:"resume"}))
-                }
-
             }
             if (position > 0) {
-                startTransition(position, -50, autoMixDuration)
-                
-                if (deckAplayState === "paused" || deckBplayState === "resume") {
-                    dispatch(updatePlayerState({deck:"deckA",playState:"playing"}))
-                }
-
-                if (deckAplayState === "playing") {
-                    dispatch(updatePlayerState({deck:"deckA",playState:"resume"}))
-                }
+                startTransition(position, -50, autoMixDuration)                
             }
         }
     }, [transitionInProcess]);
@@ -76,7 +57,7 @@ export default function HorizontalSlider() {
 
     const setVolume = (value: number[]) => {
         const crossfaderVal = value[0];
-
+        
         dispatch(updateCrossFader(crossfaderVal))
 
         dispatch(updateVolume({deck:"deckA",volume:Mixer(crossfaderVal).volumeA}))
@@ -89,7 +70,7 @@ export default function HorizontalSlider() {
         <div className='w-[100%] flex h-[70%] items-center justify-center'>
             <Slider.Root
                 orientation="horizontal"
-                value={[position || -50] }
+                value={[position] }
                 max={50}
                 min={-50}
                 step={1}

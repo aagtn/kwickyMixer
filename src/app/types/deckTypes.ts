@@ -1,3 +1,4 @@
+export type DeckSize = { w: number; h: number };
 
 export interface PlaylistItem {
     id: string;

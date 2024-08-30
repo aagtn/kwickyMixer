@@ -2,24 +2,20 @@
 import { useEffect, useRef, useState } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCurrentTime, updateDuration, playNextTrack,loadingVideo } from '../store/playerSlice';
+import { updateCurrentTime, updateDuration, playNextTrack,loadingVideo, updatePlayerState } from '../store/playerSlice';
 import { DeckId, MixTable } from '../types';
-
 
 const opts: YouTubeProps['opts'] = {
   height: '250px',
   width: '100%',
   playerVars: {
-    playlist: [],
-    autoplay: 0,
+    playlist: [], 
     controls: 0,
     iv_load_policy: 3,
     modestbranding: 1,
     rel: 1
   },
 }
-
-
 
 export default function YoutubePlayer({ deckId }: DeckId) {
 
@@ -35,13 +31,12 @@ export default function YoutubePlayer({ deckId }: DeckId) {
   const volume = useSelector((state: MixTable) => state.player[deckId].volume)
   const seekTo = useSelector((state: MixTable) => state.player[deckId].seekTo)
   const playlist = useSelector((state: MixTable) => state.player[deckId].playlist)
-  
+  const transitionInProcess = useSelector((state:MixTable) => state.player.mixer.transitionInProcess)
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
 
     if (!player) return;
-    console.log(playState);
     
     if (playState === 'playing') {
       player.playVideo();
@@ -83,6 +78,20 @@ export default function YoutubePlayer({ deckId }: DeckId) {
     }
   }, [seekTo])
 
+  useEffect(()=>{
+
+    const getPlayerState = async()=>{
+      const player = playerRef.current?.internalPlayer;
+      const playerState = await player.getPlayerState()
+      
+      if(transitionInProcess && playerState === 5){
+        player.playVideo()
+      }
+    }
+ 
+    getPlayerState()
+  },[transitionInProcess])
+
 
   const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
     const player = event.target;
@@ -93,11 +102,10 @@ export default function YoutubePlayer({ deckId }: DeckId) {
     if (selectedVideo) {
       player.cuePlaylist(selectedVideo.id)
     }
-
   };
 
 
-  const updateProgress = async () => {
+  const setNewState = async () => {
 
     const player = playerRef.current?.internalPlayer
     
@@ -107,16 +115,18 @@ export default function YoutubePlayer({ deckId }: DeckId) {
     if(playerState === -1){
       dispatch(loadingVideo({deck:deckId,isLoading:true}))
     }
-    
+
     if(playerState === 5){
+      dispatch(updatePlayerState({deck:deckId,playState:"paused"}))
       dispatch(loadingVideo({deck:deckId,isLoading:false}))
     }
-    
+      
     dispatch(updateDuration({ deck: deckId, trackDuration: duration }));
 
     if (playerState === 1) {
       
       dispatch(loadingVideo({deck:deckId,isLoading:false}))
+      dispatch(updatePlayerState({deck:deckId,playState:"playing"}))
 
       let lastUpdateTime = 0;
       const updateTime = async () => {
@@ -136,7 +146,6 @@ export default function YoutubePlayer({ deckId }: DeckId) {
   }
 
   const handleEnd = () => {
-
     if (playlist && playlist.length > 0) {
       dispatch(playNextTrack({ deck: deckId }))
     } else {
@@ -149,7 +158,7 @@ export default function YoutubePlayer({ deckId }: DeckId) {
 
     <YouTube
       onReady={handlePlayerReady}
-      onStateChange={updateProgress}
+      onStateChange={setNewState}
       onEnd={handleEnd}
       opts={opts}
       ref={playerRef}

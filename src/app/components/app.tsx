@@ -1,5 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
-import {isDesktop} from 'react-device-detect';
+import { isDesktop } from 'react-device-detect';
 import DesktopOnly from './desktopOnlyCpn';
 import { Theme } from '@radix-ui/themes';
 import { Box } from "@radix-ui/themes";
@@ -9,38 +8,59 @@ import BgYoutubePlayer from './bgPlayer';
 import '@radix-ui/themes/styles.css';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { MixTable } from '../types';
-
+import { MixTable, DeckSize } from '../types';
+import LoadingMain from './loadingMain';
+import getRatio from '../utils/getRatio';
 
 export default function App() {
 
-    const [bgOpacityA, setBgOpacityA] = useState<number>(1); 
-    const [bgOpacityB, setBgOpacityB] = useState<number>(0); 
-    const crossfaderPosition = useSelector((state:MixTable) => state.player.mixer.position)
-    const [fullScreen,setFullScreen] = useState<boolean>(true)
+    const [bgOpacityA, setBgOpacityA] = useState<number>(1);
+    const [bgOpacityB, setBgOpacityB] = useState<number>(0);
+    const crossfaderPosition = useSelector((state: MixTable) => state.player.mixer.position)
+    const [tableSize, setTableSize] = useState<DeckSize>({ w: 0, h: 0 })
+
+    useEffect(() => {
+
+        const setSize = () => {            
+            const ratio = getRatio({ arw: 16, arh: 9 })
+            setTableSize(ratio);
+        }
+
+        window.addEventListener('resize', () => {
+            setSize()
+        })
+        
+        setSize()
+
+        return () => {
+            window.removeEventListener('resize', setSize);
+        };
+    }, [])
 
     useEffect(() => {
         if (crossfaderPosition) {
             const crossfaderValue = crossfaderPosition;
 
-            const opacityA = 1 - (crossfaderValue + 50) / 100; 
-            const opacityB = (crossfaderValue + 50) / 100; 
+            const opacityA = 1 - (crossfaderValue + 50) / 100;
+            const opacityB = (crossfaderValue + 50) / 100;
 
             setBgOpacityA(opacityA);
             setBgOpacityB(opacityB);
         }
     }, [crossfaderPosition]);
 
-    
-    if(!isDesktop) return <DesktopOnly/>
-    
+
+    if (!isDesktop) return <DesktopOnly />
+    if (tableSize.w === 0) return <LoadingMain />
+
     return (
         <Theme accentColor="indigo" appearance="dark">
-          
+
             <div className="h-[100vh] max-h-[100vh] w-[100vw] flex">
-                <div className={`flex z-10 w-full flex justify-center items-center ${!fullScreen ? "p-8" :"p-2"}`}>
-                    <div className={`flex w-full h-full max-h-[900px] max-w-[1800px]  ${!fullScreen ? 'min-w-[1100px] h-[80%]':"h-[90%]"} rounded-3xl bg-[#101114] p-6 `}>
-                        <div className="flex w-full rounded-xl p-4 main-bg">
+                <div className={`flex z-10 w-full flex  items-center ${tableSize.h >= 600 ? "justify-center " : ""} p-2`}>
+                    <div className={`relative min-w-fit min-h-[600px] flex rounded-3xl bg-[#101114] p-6 overflow-hidden`}
+                        style={{ width: tableSize.w, height: tableSize.h }}>
+                        <div className="flex w-fit rounded-xl p-4 main-bg">
                             <DeckCpnt deckId={"deckA"} />
                             <MixerCpnt />
                             <DeckCpnt deckId={"deckB"} />
@@ -49,23 +69,11 @@ export default function App() {
                 </div>
 
 
-                <Box position={"absolute"} width={"100%"} height={"100%"} className="top-0 overflow-hidden">
-                    <div
-                        style={{
-                            height: '100%',
-                            opacity: bgOpacityA,
-                        }}
-                        className="w-full bg-slate-800 p-0 overflow-hidden"
-                    >
+                <Box position={"absolute"} width={"100%"} height={"100%"} className="top-0 overflow-hidden min-w-[985px] min-h-[600px]">
+                    <div style={{ opacity: bgOpacityA }} className="w-full h-full bg-slate-800 p-0 overflow-hidden">
                         <BgYoutubePlayer deckId={'deckA'} />
                     </div>
-                    <div
-                        style={{
-                            height: '100%',
-                            opacity: bgOpacityB,
-                        }}
-                        className="w-full p-0 overflow-hidden absolute top-0"
-                    >
+                    <div style={{ opacity: bgOpacityB }} className="w-full h-full p-0 overflow-hidden absolute top-0">
                         <BgYoutubePlayer deckId={'deckB'} />
                     </div>
                 </Box>

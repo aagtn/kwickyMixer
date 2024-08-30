@@ -18,7 +18,7 @@ export default function InputSearch({deckId}: DeckId) {
             const response = await fetchYoutube({ input: newSearchInput, deck: deck })
             return response;
         },
-        onSuccess: (data, variables) => {
+        onSuccess: (data) => {
             dispatch(updateVideos({deck:deckId,videos:data.videos}))
         }
     });
