@@ -4,8 +4,6 @@ const nextConfig = {
     domains: ['i.ytimg.com'],
   },
   reactStrictMode: false,
-  // next.config.js
-
   output: 'export',
   images: {
     unoptimized: true,

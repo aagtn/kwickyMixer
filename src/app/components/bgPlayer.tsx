@@ -2,7 +2,6 @@
 import { useRef, useEffect, useState } from 'react';
 import YouTube, { YouTubeProps } from 'react-youtube';
 import { useDispatch, useSelector } from 'react-redux';
-import Image from 'next/image';
 import { DeckId, MixTable } from '../types';
 import { updatePlayerState } from '../store/playerSlice';
 
@@ -11,12 +10,11 @@ const opts: YouTubeProps['opts'] = {
   height: '150%',
   width: '150%',
   playerVars: {
-    playlist: [],
-    autoplay: 0,
+    playlist: [], 
     controls: 0,
     iv_load_policy: 3,
     modestbranding: 1,
-    rel: 1
+    rel: 0
   }
 };
 
@@ -35,8 +33,8 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
 
 
   useEffect(() => {
-    
-    
+
+
     if (!player) return;
 
     if (playState === 'playing') {
@@ -87,7 +85,7 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
     if (volume !== undefined) {
       player.setVolume(0);
     }
-    if(selectedVideo){
+    if (selectedVideo) {
       player.cuePlaylist(selectedVideo.id)
       setPlayerReady(true)
     }
@@ -95,15 +93,12 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
 
   return (
     <div className={`relative w-[100%] h-[100%] scale-[1] ${playState === "playing" ? 'translate-x-[-25%]' : "blur-[50px]"}`}>
-      {playState === "paused" &&
-        <Image src={selectedVideo?.image || ""} width={1000} height={600} alt='cover' className='w-full h-full object-cover object-center scale-150' />
-      }
       <YouTube
         ref={playerRef}
         onReady={handlePlayerReady}
         onEnd={handleEnd}
         opts={opts}
-        className='h-[100%] w-[100%] ' />
+        className='h-[100%] w-[100%]'/>
     </div>
   );
 }

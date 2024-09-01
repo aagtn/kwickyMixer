@@ -28,7 +28,7 @@ export default function PlaylistMenu({ children, index, data, deckId }: { childr
     }
 
     return (
-        <ContextMenu.Root>
+        <ContextMenu.Root >
             <ContextMenu.Trigger className="ContextMenuTrigger">{children}</ContextMenu.Trigger>
             <ContextMenu.Portal>
                 <ContextMenu.Content className="ContextMenuContent">

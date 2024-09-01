@@ -79,7 +79,5 @@
 
 .slider-vol-morph{
   border-radius: 18px;
-background: #17191e;
-box-shadow: inset 25px 25px 49px #14151a,
-            inset -25px -25px 49px #1a1d23;
+  
 }

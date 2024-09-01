@@ -1,151 +1,59 @@
-import * as Slider from '@radix-ui/react-slider';
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import '../styles/standbyanim.css';
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default function StandByMode() {
-    const [eyeStyle, setEyeStyle] = useState({
-        height: 100,
-        translateX: 0,
-        translateY: 0,
-        transition: 0.4,
-        followMouse: false,
-        curve: "ease-in-out"
-    });
-
-    const eyeStyleRef = useRef(eyeStyle);
-    eyeStyleRef.current = eyeStyle; 
-
-    const [mouseTimer, setMouseTimer] = useState<NodeJS.Timeout | null>(null);
-
-    const setEyesSize = async (size: number) => {
-        setEyeStyle(prev => ({ ...prev, height: size }));
-    };
-
-    const moveEyeX = async (x: number) => {
-        setEyeStyle(prev => ({ ...prev, translateX: x }));
-        await delay(500);
-    };
-
-    const blink1 = async () => {
-        await setEyesSize(0);
-        await delay(200);
-        await setEyesSize(10);
-        await delay(150);
-    };
-
-    const blink2 = async () => {
-        await setEyesSize(0);
-        await delay(200);
-        await setEyesSize(10);
-        await delay(150);
-        await setEyesSize(0);
-        await delay(150);
-        await setEyesSize(10);
-    };
-
-    const randomDelay = (min:number,max:number) => {
-        return Math.random() * (max - min) + min
-    }
-    
-    let inProcess = false
-    
-    const handleMouseStop = async () => {
-        if(inProcess) return
-        inProcess = true
-        await delay(3000);  
-        blink1()
-        inProcess = false
-    };
-
-    const handleMouseMove = (event: MouseEvent) => {
-        if (!eyeStyleRef.current.followMouse) return;
-
-        
-        
-        if (mouseTimer) {
-            clearTimeout(mouseTimer);
-        }
-
-        const { clientX, clientY } = event;
-        const eyeContainer = document.querySelector('.eye-container');
-        if (eyeContainer) {
-            const rect = eyeContainer.getBoundingClientRect();
-            const eyeCenterX = rect.left + rect.width / 2;
-            const eyeCenterY = rect.top + rect.height / 2;
-
-            const deltaX = (clientX - eyeCenterX) / 30;
-            const deltaY = (clientY - eyeCenterY) / 15;
-
-            setEyeStyle(prev => ({
-                ...prev,
-                translateX: deltaX,
-                translateY: deltaY,
-                transition: 0.1,
-                curve: "linear"
-            }));
-        }
-
-        setMouseTimer(setTimeout(handleMouseStop, 1000));
-    };
+    const eyeRef = useRef<HTMLDivElement | null>(null);
+    let timer = 0
 
     useEffect(() => {
-        const animate = async () => {
-            await delay(1000);
-            await setEyesSize(10);
-            await delay(500);
-            await moveEyeX(-10);
-            await moveEyeX(10);
-            await moveEyeX(0);
-            await delay(500);
-            await blink2();
-            await delay(500);
-            setEyeStyle(prev => ({ ...prev, followMouse: true }));
-        };
+        if (eyeRef.current) {
+            setInterval(() => {
+                timer++
+                if (timer > 3) {
+                    addBlink()
+                    timer = 0
+                }
+            }, 1000)
 
-        animate();
+            const activeFollow = (e: MouseEvent) => {
+                if (eyeRef.current) {
+                    timer = 0
+                    const windW = window.innerWidth;
+                    const windH = window.innerHeight;
+                    const deltaX = e.clientX - (windW / 2)
+                    const deltaY = e.clientY - (windH / 2)
+                    const smoothness = 30
+                    eyeRef.current.style.transform = `translate(${deltaX / smoothness}px, ${deltaY / smoothness}px)`;
+                }
+            };
 
-        window.addEventListener('mousemove', handleMouseMove);
+            const addBlink = () => {
 
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            if (mouseTimer) clearTimeout(mouseTimer);
-        };
-    }, []);
+                eyeRef.current?.classList.add("blink")
+                setTimeout(() => {
+                    eyeRef.current?.classList.remove("blink")
+                }, 1000)
+            }
+
+            setTimeout(() => {
+                eyeRef.current?.classList.remove("intro")
+            }, 2000)
+
+            window.addEventListener('mousemove', activeFollow)
+
+            return () => {
+                window.removeEventListener('mousemove', activeFollow);
+            };
+        }
+    }, [eyeRef])
 
     return (
-        <div className='w-[50%] flex h-[80%] items-center justify-center mt-8 eye-container'>
-            <Slider.Root
-                orientation="vertical"
-                max={100}
-                step={1}
-                value={[100]}
-                aria-label="Volume"
-                style={{ position: 'relative', display: 'flex', alignItems: 'center', height: '70%', cursor: 'unset' }}
-            >
-                <Slider.Track
-                    style={{
-                        position: 'relative',
-                        flexGrow: 1,
-                        width: 10,
-                        height: eyeStyle.height,
-                        transform: `translate(${eyeStyle.translateX}px, ${eyeStyle.translateY}px)`,
-                        borderRadius: 2,
-                        transition: `${eyeStyle.transition}s ${eyeStyle.curve}`,
-                    }}
-                    className='slider-vol-morph flex justify-center'
-                >
-                    <Slider.Range
-                        style={{
-                            position: 'absolute',
-                            background: 'blue',
-                            width: '60%',
-                            borderRadius: 'inherit',
-                            filter: "blur(2px)",
-                        }}
-                    />
-                </Slider.Track>
-            </Slider.Root>
+        <div className='w-full flex h-[80%] items-center justify-center mt-8 '>
+            <div ref={eyeRef} className="eye-container intro gpu-acc">
+                <div className="eye gpu-acc"></div>
+                <div className="eye gpu-acc"></div>
+            </div>
         </div>
     );
 }

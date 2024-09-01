@@ -23,6 +23,10 @@
   }
 }
 
+.gpu-acc{
+  transform: translate3d(0, 0, 0);
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(to bottom,
@@ -114,7 +118,7 @@ height: 30px!important;
 
 .screen-morph{
   
-  background: #17191e;
+  background: black;
   box-shadow:  5px 5px 10px #101115,
                -5px -5px 10px #1e2127;
 }

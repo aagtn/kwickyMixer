@@ -1,12 +1,10 @@
-import VerticalSlider from "./sliderV"
+import StandByMode from "./standByMode"
 
-
-export default function ScreenMixer({deckA,deckB}:any){
+export default function ScreenMixer(){
 
     return(
         <div className='w-full h-full bg-black flex relative justify-center'>
-        <VerticalSlider volume={deckA?.volume ?? 100} deckId={"deckA"} />
-        <VerticalSlider volume={deckB?.volume ?? 0} deckId={"deckB"} />
+            <StandByMode/>
         </div>
     )
 }

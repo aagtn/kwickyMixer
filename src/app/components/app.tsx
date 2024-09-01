@@ -1,7 +1,6 @@
 import { isDesktop } from 'react-device-detect';
 import DesktopOnly from './desktopOnlyCpn';
 import { Theme } from '@radix-ui/themes';
-import { Box } from "@radix-ui/themes";
 import DeckCpnt from './deck';
 import MixerCpnt from './mixer';
 import BgYoutubePlayer from './bgPlayer';
@@ -57,10 +56,10 @@ export default function App() {
         <Theme accentColor="indigo" appearance="dark">
 
             <div className="h-[100vh] max-h-[100vh] w-[100vw] flex">
-                <div className={`flex z-10 w-full flex  items-center ${tableSize.h >= 600 ? "justify-center " : ""} p-2`}>
-                    <div className={`relative min-w-fit min-h-[600px] flex rounded-3xl bg-[#101114] p-6 overflow-hidden`}
+                <div className={`flex z-10 w-full flex  items-center ${tableSize.h >= 600 ? "justify-center " : ""} p-6`}>
+                    <div className={`relative min-w-[100%] min-h-[600px] flex rounded-3xl bg-[#101114] p-6 overflow-hidden`}
                         style={{ width: tableSize.w, height: tableSize.h }}>
-                        <div className="flex w-fit rounded-xl p-4 main-bg">
+                        <div className="flex w-full rounded-xl p-4 main-bg">
                             <DeckCpnt deckId={"deckA"} />
                             <MixerCpnt />
                             <DeckCpnt deckId={"deckB"} />
@@ -69,14 +68,14 @@ export default function App() {
                 </div>
 
 
-                <Box position={"absolute"} width={"100%"} height={"100%"} className="top-0 overflow-hidden min-w-[985px] min-h-[600px]">
+                <div className="w-full h-full absolute top-0 overflow-hidden min-w-[985px] min-h-[600px]">
                     <div style={{ opacity: bgOpacityA }} className="w-full h-full bg-slate-800 p-0 overflow-hidden">
                         <BgYoutubePlayer deckId={'deckA'} />
                     </div>
                     <div style={{ opacity: bgOpacityB }} className="w-full h-full p-0 overflow-hidden absolute top-0">
                         <BgYoutubePlayer deckId={'deckB'} />
                     </div>
-                </Box>
+                </div>
             </div>
         </Theme>
     );

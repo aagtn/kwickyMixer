@@ -13,6 +13,7 @@ KwickyMixer is a web application designed to mix music tracks directly from YouT
 - **Crossfade between YouTube tracks**: Smooth transitions between songs.
 - **Playback controls**: Play, pause, and resume YouTube videos.
 - **Looping**: Enable or disable looping for videos.
+- **Playlist**: A playlist for each deck.
 - **AutoMix**: Automatically transition between tracks.
 
 ## 🌟 Live Demo
@@ -21,7 +22,7 @@ Check out the live demo [here](https://www.kwicky.fr/)
 
 ## 🛠️ Installation
 
-To get started with KwickyMixer, follow these steps:
+To get started, follow these steps:
 
 1. **Clone the repository**:
 
@@ -65,7 +66,7 @@ This will create an optimized production build in the "out" folder.
 
 ## 🤝 Contributing
 
-We welcome contributions to improve KwickyMixer!
+We welcome contributions!
 
 ## 📄 Acknowledgments
 
@@ -73,4 +74,4 @@ We welcome contributions to improve KwickyMixer!
 • Radix UI
 • Next.js
 
-Thank you for checking out KwickyMixer! We hope you enjoy using it as much as we enjoyed building it.
+Thank you for checking out! We hope you enjoy using it as much as we enjoyed building it.
