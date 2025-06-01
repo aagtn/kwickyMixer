@@ -26,14 +26,14 @@ export default function AutoMixParams(){
         <Popover.Portal>
           <Popover.Content className="PopoverContent" sideOffset={5}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <p className="Text" style={{ marginBottom: 10 }}>
+              <p className="Text text-white" style={{ marginBottom: 10 }}>
                 Auto fade
               </p>
               <fieldset className="Fieldset">
-                <label className="Label" htmlFor="width">
+                <label className="Label text-white" htmlFor="width">
                   Duration
                 </label>
-                <input className="Input-prop" id="width" onChange={handleUpdateDuration} defaultValue={autoMixDuration} type='number' min={0} max={30}/>
+                <input className="Input-prop text-white" id="width" onChange={handleUpdateDuration} defaultValue={autoMixDuration} type='number' min={0} max={30}/>
               </fieldset>
             </div>
             <Popover.Close className="PopoverClose" aria-label="Close">

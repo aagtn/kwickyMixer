@@ -5,7 +5,6 @@ import { PlaylistItem } from '../types';
 import { useRef } from 'react';
 import { DeckId, MixTable } from '../types';
 import { useSelector, useDispatch } from 'react-redux';
-import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { updateSelectedVideo, addToPlayList } from '../store/playerSlice';
 
 export default function ScreenResult({ deckId }: DeckId) {
@@ -49,9 +48,6 @@ export default function ScreenResult({ deckId }: DeckId) {
         }
     };
 
-    const handleRightClick = () => {
-       
-    }
 
     const isInPlaylist = (video: PlaylistItem) => {
         return playlist.findIndex(track => track.id === video.id);

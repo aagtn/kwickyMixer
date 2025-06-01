@@ -39,7 +39,7 @@ export default function ProgressBar({deckId}:DeckId) {
                     dispatch(updateTransitionInProcess(true))
             }
         }
-    }, [playerDuration,playerTime]);
+    }, [playerDuration,playerTime,autoMix,autoMixDuration,dispatch,transitionInProcess]);
 
 
     useEffect(() => { 

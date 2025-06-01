@@ -51,7 +51,7 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
       player.setLoop(false)
     }
 
-  }, [playState, loop]);
+  }, [playState, loop, player]);
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer
@@ -59,7 +59,7 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
     if (selectedVideo && playerReady) {
       player.cuePlaylist(selectedVideo.id)
     }
-  }, [selectedVideo])
+  }, [selectedVideo, playerReady])
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
@@ -71,7 +71,7 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
       }
     }
 
-  }, [seekTo])
+  }, [seekTo,playState])
 
   const handleEnd = () => {
     if (!loop) {

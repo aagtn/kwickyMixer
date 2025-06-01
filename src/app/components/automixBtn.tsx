@@ -14,7 +14,7 @@ export default function AutoMixBtn() {
 
     useEffect(()=>{
         dispatch(updateAutoMixState(autoTransition))
-    },[autoTransition])
+    },[autoTransition,dispatch])
 
     return (
         <div className="w-[40%] btn-morph flex justify-evenly" onClick={handleAutoTrans}>

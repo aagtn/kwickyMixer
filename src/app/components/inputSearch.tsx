@@ -42,7 +42,7 @@ export default function InputSearch({deckId}: DeckId) {
 
     useEffect(()=>{
         dispatch(updateActivePlaylist({deck:deckId,playlistActive}))
-    },[playlistActive])
+    },[playlistActive,deckId,dispatch])
 
     return (
         <div className='flex w-full relative'>

@@ -59,7 +59,7 @@ export default function YoutubePlayer({ deckId }: DeckId) {
     if (selectedVideo && playerReady) {
       player.cuePlaylist(selectedVideo.id)
     }
-  }, [selectedVideo])
+  }, [selectedVideo,playerReady])
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
@@ -76,7 +76,7 @@ export default function YoutubePlayer({ deckId }: DeckId) {
         player.pauseVideo()
       }
     }
-  }, [seekTo])
+  }, [seekTo,playState])
 
   useEffect(()=>{
 

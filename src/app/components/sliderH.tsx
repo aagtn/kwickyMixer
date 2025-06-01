@@ -52,7 +52,7 @@ export default function HorizontalSlider() {
                 startTransition(position, -50, autoMixDuration)                
             }
         }
-    }, [transitionInProcess]);
+    }, [transitionInProcess,autoMixDuration,position,startTransition]);
 
 
     const setVolume = (value: number[]) => {
