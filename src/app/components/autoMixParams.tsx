@@ -1,4 +1,4 @@
-import '../styles/AutoMix.css'
+import '../styles/autoMix.css'
 import * as Popover from '@radix-ui/react-popover';
 import { MixerHorizontalIcon, Cross2Icon } from '@radix-ui/react-icons';
 import { updateAutoMixDuration } from '../store/playerSlice';
