@@ -5,38 +5,70 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DeckId, MixTable } from '../types';
 import { updatePlayerState } from '../store/playerSlice';
 
-
 const opts: YouTubeProps['opts'] = {
   height: '150%',
   width: '150%',
   playerVars: {
-    playlist: [], 
+    playlist: [],
     controls: 0,
     iv_load_policy: 3,
     modestbranding: 1,
-    rel: 0
-  }
+    rel: 0,
+  },
 };
-
 
 export default function BgYoutubePlayer({ deckId }: DeckId) {
   const playerRef = useRef<YouTube>(null);
+  const dispatch = useDispatch();
+  const [playerReady, setPlayerReady] = useState(false);
 
-  const dispatch = useDispatch()
-  const [playerReady, setPlayerReady] = useState(false)
-  const playState = useSelector((state: MixTable) => state.player[deckId].playState)
-  const loop = useSelector((state: MixTable) => state.player[deckId].loop)
-  const selectedVideo = useSelector((state: MixTable) => state.player[deckId].selectedVideo)
-  const seekTo = useSelector((state: MixTable) => state.player[deckId].seekTo)
-  const volume = useSelector((state: MixTable) => state.player[deckId].volume)
-  const player = playerRef.current?.internalPlayer;
+  const playState = useSelector((state: MixTable) => state.player[deckId].playState);
+  const loop = useSelector((state: MixTable) => state.player[deckId].loop);
+  const selectedVideo = useSelector((state: MixTable) => state.player[deckId].selectedVideo);
+  const seekTo = useSelector((state: MixTable) => state.player[deckId].seekTo);
+  const volume = useSelector((state: MixTable) => state.player[deckId].volume);
 
+  const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
+    const player = event.target;
+    if (volume !== undefined) player.setVolume(0); // mute bg
+    setPlayerReady(true);
+
+    if (selectedVideo) {
+      if (playState === 'playing') {
+        player.loadPlaylist([selectedVideo.id]);
+        player.playVideo();
+      } else {
+        player.cuePlaylist([selectedVideo.id]);
+      }
+    }
+  };
+
+  const handleEnd = () => {
+    if (!loop) {
+      dispatch(updatePlayerState({ deck: deckId, playState: 'paused' }));
+    }
+  };
 
   useEffect(() => {
+    const player = playerRef.current?.internalPlayer;
+    if (!player || !playerReady) return;
 
+    if (seekTo > 0) {
+      player.seekTo(seekTo);
+      if (playState === 'paused') {
+        player.pauseVideo();
+      }
+    }
+  }, [seekTo, playState, playerReady]);
 
-    if (!player) return;
+  useEffect(() => {
+    const player = playerRef.current?.internalPlayer;
+    if (!player || !playerReady) return;
 
+    // Loop
+    player.setLoop(loop || false);
+
+    // Play state
     if (playState === 'playing') {
       player.playVideo();
     } else if (playState === 'paused') {
@@ -44,61 +76,35 @@ export default function BgYoutubePlayer({ deckId }: DeckId) {
     } else if (playState === 'resume') {
       player.seekTo(0);
     }
-
-    if (loop) {
-      player.setLoop(true)
-    } else {
-      player.setLoop(false)
-    }
-
-  }, [playState, loop, player]);
-
-  useEffect(() => {
-    const player = playerRef.current?.internalPlayer
-    if (!player) return
-    if (selectedVideo && playerReady) {
-      player.cuePlaylist(selectedVideo.id)
-    }
-  }, [selectedVideo, playerReady])
+  }, [playState, loop, playerReady]);
 
   useEffect(() => {
     const player = playerRef.current?.internalPlayer;
-    if (!player) return
-    if (seekTo > 0) {
-      player.seekTo(seekTo);
-      if (seekTo > 0 && playState === 'paused') {
-        player.pauseVideo()
+    if (!player || !playerReady) return;
+
+    if (selectedVideo) {
+      if (playState === 'playing') {
+        player.loadPlaylist([selectedVideo.id]);
+        player.playVideo();
+      } else {
+        player.cuePlaylist([selectedVideo.id]);
       }
     }
-
-  }, [seekTo,playState])
-
-  const handleEnd = () => {
-    if (!loop) {
-      dispatch(updatePlayerState({ deck: deckId, playState: "paused" }))
-    }
-  }
-
-  const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
-    const player = event.target;
-    if (!player) return
-    if (volume !== undefined) {
-      player.setVolume(0);
-    }
-    if (selectedVideo) {
-      player.cuePlaylist(selectedVideo.id)
-      setPlayerReady(true)
-    }
-  };
+  }, [selectedVideo, playState, playerReady]);
 
   return (
-    <div className={`relative w-[100%] h-[100%] scale-[1] ${playState === "playing" ? 'translate-x-[-25%]' : "blur-[50px]"}`}>
+    <div
+      className={`relative w-full h-full scale-[1] ${
+        playState === 'playing' ? 'translate-x-[-25%]' : 'blur-[50px]'
+      }`}
+    >
       <YouTube
         ref={playerRef}
         onReady={handlePlayerReady}
         onEnd={handleEnd}
         opts={opts}
-        className='h-[100%] w-[100%]'/>
+        className="h-full w-full"
+      />
     </div>
   );
 }
